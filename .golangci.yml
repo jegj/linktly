@@ -1,0 +1,31 @@
+run:
+  timeout: 5m
+  # Exit code when at least one issue was found.
+  issues-exit-code: 1
+  tests: true 
+  modules-download-mode: readonly
+  go: '1.23' 
+  linters:
+  # https://golangci-lint.run/usage/linters/#enabled-by-default-linters
+  enable:
+    - bodyclose
+    - deadcode
+    - dogsled
+    - errcheck
+    - goconst
+    - gocyclo
+    - gofmt
+    - gosimple
+    - govet
+    - importas
+    - ineffassign
+    - misspell
+    - revive
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - typecheck
+    - unused
+    - varcheck

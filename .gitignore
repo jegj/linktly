@@ -8,6 +8,7 @@
 *.so
 *.dylib
 internal/database/local/
+internal/database/dev_scripts/
 
 # Test binary, built with `go test -c`
 *.test

@@ -28,7 +28,7 @@ migrate create -ext sql -dir internal/database/migrations -seq create_linktly_sc
 ## Run Migration
 
 ```sh
-export POSTGRESQL_URL='postgres://linktly_admin:dfNjlX@localhost:5433/linktlydb?sslmode=disable'
+export POSTGRESQL_URL='postgres://linktly_admin:dev123@localhost:5433/linktlydb?sslmode=disable'
 ```
 
 ### up

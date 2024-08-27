@@ -2,10 +2,12 @@ package bootstrap
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -32,7 +34,7 @@ func NewServer() *Server {
 
 func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 	server := http.Server{
-		Addr:    ":8080", // FIXME: Use env also for local development wihtout docker-compose
+		Addr:    os.Getenv("SERVER_ADDRESS"),
 		Handler: s.router,
 		/*
 			IdleTimeout:  s.cfg.IdleTimeout,
@@ -48,8 +50,12 @@ func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 	go func() {
 		<-sig
 
-		// Shutdown signal with grace period of 30 seconds FIXME: USE env variable here
-		shutdownCtx, shutdownCancelFunc := context.WithTimeout(ctx, 30*time.Second)
+		shutdownGracePeriod, err := strconv.Atoi(os.Getenv("SHUTDOWN_GRACE_PERIOD_SECONDS"))
+		if err != nil {
+			panic(errors.New("Invalid value for SHUTDOWN_GRACE_PERIOD"))
+		}
+		// Shutdown signal with grace period of 30 seconds
+		shutdownCtx, shutdownCancelFunc := context.WithTimeout(ctx, time.Duration(shutdownGracePeriod)*time.Second)
 		defer shutdownCancelFunc()
 
 		go func() {
@@ -60,7 +66,7 @@ func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 		}()
 
 		// Trigger graceful shutdown
-		err := server.Shutdown(shutdownCtx)
+		err = server.Shutdown(shutdownCtx)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -68,6 +74,7 @@ func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 	}()
 
 	// Run the server
+	log.Printf("Starting server on %v", os.Getenv("SERVER_ADDRESS"))
 	err := server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		log.Fatal(err)

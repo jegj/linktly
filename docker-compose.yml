@@ -1,6 +1,18 @@
 version: '3.9'
 
 services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/app
+    env_file:
+      - ./configs/.env
+    depends_on:
+      - postgres
   postgres:
     image: jegj/postgres_16_uuidv7
     container_name: linktly_pg_db

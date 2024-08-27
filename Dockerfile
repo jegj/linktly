@@ -1,11 +1,11 @@
 FROM golang:1.23.0-alpine
 
-RUN mkdir /app
-
-ADD . /app
-
 WORKDIR /app
 
-RUN go build -o main cmd/main.go
+RUN go install github.com/air-verse/air@latest
 
-CMD ["/app/main"]
+COPY go.mod go.sum ./
+
+RUN go mod download
+
+CMD ["air", "-c", ".air.toml"]

@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -21,7 +22,8 @@ func main() {
 	// r.Mount("/api/v1", route.PingRoutes())
 
 	// Start the HTTP server
-	err := http.ListenAndServe(":8080", r)
+	log.Printf("starting server on %s\n", os.Getenv("SERVER_ADDRESS"))
+	err := http.ListenAndServe(os.Getenv("SERVER_ADDRESS"), r)
 	if err != nil {
 		log.Fatal(err)
 	}

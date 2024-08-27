@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS linktly.folders (
    account_id  UUID REFERENCES linktly.accounts(id) NOT NULL,
    parent_folder_id UUID REFERENCES linktly.folders(id) DEFAULT NULL,
    created_at TIMESTAMP,
-   updated_at TIMESTAMP DEFAULT NULL
+   updated_at TIMESTAMP DEFAULT NULL,
+   undeletable BOOLEAN DEFAULT FALSE
 );
 
 COMMENT ON COLUMN linktly.folders.id is 'To get created_at use uuid_v7_to_timestamptz(id)';

@@ -4,6 +4,8 @@
 
 - [golangci-lint](https://golangci-lint.run/welcome/install/)
 - [air](https://github.com/air-verse/air)
+- [pino-pretty](https://github.com/pinojs/pino-pretty)
+
 
 ## Initial steps
 

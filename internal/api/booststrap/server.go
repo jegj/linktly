@@ -16,13 +16,17 @@ type Server struct {
 	Env *EnvVar
 	// Mongo mongo.Client
 	router *chi.Mux
+
+	// Slog var to allow change level on-the-fly
+	ServerLogVar *slog.LevelVar
 }
 
 func NewServer() *Server {
 	env := NewEnvVar()
 	server := &Server{
-		router: chi.NewRouter(),
-		Env:    env,
+		router:       chi.NewRouter(),
+		Env:          env,
+		ServerLogVar: SetUpLogger(env),
 	}
 
 	server.routes()
@@ -32,8 +36,6 @@ func NewServer() *Server {
 }
 
 func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
-	SetUpLogger(s.Env)
-
 	server := http.Server{
 		Addr:         s.Env.ServerAddress,
 		Handler:      s.router,

@@ -19,7 +19,7 @@ func SetUpLogger(env *EnvVar) *slog.LevelVar {
 	if !exists {
 		level = slog.LevelWarn
 	}
-	logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: programLevel}))
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: programLevel}))
 	programLevel.Set(level)
 	slog.SetDefault(logger)
 	return programLevel

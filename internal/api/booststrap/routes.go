@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jegj/linktly/internal/api/domain/accounts"
+	"github.com/jegj/linktly/internal/api/domain/maintance"
 )
 
 func (s *Server) routes() {
@@ -16,4 +17,5 @@ func (s *Server) routes() {
 
 	// TODO: Pass dbstore
 	accounts.LoadRoutes(s.router)
+	maintance.LoadRoutes(s.router, s.ServerLogVar)
 }

@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS linktly.accounts (
    email VARCHAR(255) UNIQUE NOT NULL,
    password VARCHAR(255),
    api_token VARCHAR(255) DEFAULT NULL,
+   role DEFAULT 2 INT,
    created_at TIMESTAMP,
    updated_at TIMESTAMP DEFAULT NULL,
    CONSTRAINT email_check CHECK (
@@ -14,6 +15,7 @@ CREATE TABLE IF NOT EXISTS linktly.accounts (
 );
 
 COMMENT ON COLUMN linktly.accounts.id is 'To get created_at use uuid_v7_to_timestamptz(id)';
+COMMENT ON COLUMN linktly.accounts.role is '1->admin, 2->user, 3->guest';
 
 CREATE OR REPLACE TRIGGER before_insert_linktly_accounts_set_created_at
 BEFORE INSERT ON linktly.accounts 

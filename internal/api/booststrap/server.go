@@ -2,45 +2,41 @@ package bootstrap
 
 import (
 	"context"
-	"errors"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
-	"time"
 
 	"github.com/go-chi/chi"
 )
 
 type Server struct {
-	// Env *Env
+	Env *EnvVar
 	// Mongo mongo.Client
 	router *chi.Mux
 }
 
 func NewServer() *Server {
+	env := NewEnvVar()
 	server := &Server{
 		router: chi.NewRouter(),
+		Env:    env,
 	}
 
 	server.routes()
 
-	// app.Env = NewEnv()
 	// app.Mongo = NewMongoDatabase(app.Env)
 	return server
 }
 
 func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 	server := http.Server{
-		Addr:    os.Getenv("SERVER_ADDRESS"),
-		Handler: s.router,
-		/*
-			IdleTimeout:  s.cfg.IdleTimeout,
-			ReadTimeout:  s.cfg.ReadTimeout,
-			WriteTimeout: s.cfg.WriteTimeout,
-		*/
+		Addr:         s.Env.ServerAddress,
+		Handler:      s.router,
+		IdleTimeout:  s.Env.IdleTimeout,
+		ReadTimeout:  s.Env.ReadTimeout,
+		WriteTimeout: s.Env.WriteTimeout,
 	}
 
 	// Listen for syscall signals for process to interrupt/quit
@@ -50,12 +46,8 @@ func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 	go func() {
 		<-sig
 
-		shutdownGracePeriod, err := strconv.Atoi(os.Getenv("SHUTDOWN_GRACE_PERIOD_SECONDS"))
-		if err != nil {
-			panic(errors.New("Invalid value for SHUTDOWN_GRACE_PERIOD"))
-		}
 		// Shutdown signal with grace period of 30 seconds
-		shutdownCtx, shutdownCancelFunc := context.WithTimeout(ctx, time.Duration(shutdownGracePeriod)*time.Second)
+		shutdownCtx, shutdownCancelFunc := context.WithTimeout(ctx, s.Env.ShutdownGracePeriod)
 		defer shutdownCancelFunc()
 
 		go func() {
@@ -66,7 +58,8 @@ func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 		}()
 
 		// Trigger graceful shutdown
-		err = server.Shutdown(shutdownCtx)
+		log.Println("Shutting down the server gracefully...")
+		err := server.Shutdown(shutdownCtx)
 		if err != nil {
 			log.Fatal(err)
 		}

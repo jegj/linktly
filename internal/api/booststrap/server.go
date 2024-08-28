@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 type Server struct {
@@ -61,7 +61,7 @@ func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 		log.Println("Shutting down the server gracefully...")
 		err := server.Shutdown(shutdownCtx)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(err.Error())
 		}
 		serverStopCtx()
 	}()
@@ -70,7 +70,7 @@ func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 	log.Printf("Starting server on %v", os.Getenv("SERVER_ADDRESS"))
 	err := server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 
 	// Wait for server context to be stopped

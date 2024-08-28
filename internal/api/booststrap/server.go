@@ -2,7 +2,8 @@ package bootstrap
 
 import (
 	"context"
-	"log"
+	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -31,6 +32,8 @@ func NewServer() *Server {
 }
 
 func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
+	SetUpLogger(s.Env)
+
 	server := http.Server{
 		Addr:         s.Env.ServerAddress,
 		Handler:      s.router,
@@ -53,24 +56,27 @@ func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 		go func() {
 			<-shutdownCtx.Done()
 			if shutdownCtx.Err() == context.DeadlineExceeded {
-				log.Fatal("graceful shutdown timed out.. forcing exit.")
+				slog.Error("graceful shutdown timed out.. forcing exit.")
+				os.Exit(1)
 			}
 		}()
 
 		// Trigger graceful shutdown
-		log.Println("Shutting down the server gracefully...")
+		slog.Info("Shutting down the server gracefully...")
 		err := server.Shutdown(shutdownCtx)
 		if err != nil {
-			log.Fatal(err.Error())
+			slog.Error(err.Error())
+			os.Exit(1)
 		}
 		serverStopCtx()
 	}()
 
 	// Run the server
-	log.Printf("Starting server on %v", os.Getenv("SERVER_ADDRESS"))
+	slog.Info(fmt.Sprintf("Starting server on %v", os.Getenv("SERVER_ADDRESS")))
 	err := server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
-		log.Fatal(err.Error())
+		slog.Error(err.Error())
+		os.Exit(1)
 	}
 
 	// Wait for server context to be stopped

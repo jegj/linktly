@@ -6,7 +6,9 @@ import (
 )
 
 func (s *Server) routes() {
-	s.router.Use(middleware.Logger)
+	if s.Env.LogHttpRequest {
+		s.router.Use(middleware.Logger)
+	}
 	s.router.Use(middleware.Recoverer)
 	s.router.Use(middleware.RequestID)
 	s.router.Use(middleware.CleanPath)

@@ -1,7 +1,8 @@
 package bootstrap
 
 import (
-	"log"
+	"log/slog"
+	"os"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
@@ -16,13 +17,16 @@ type EnvVar struct {
 	WriteTimeout        time.Duration `default:"10s" envconfig:"WRITE_TIMEOUT"`
 	ReadTimeout         time.Duration `default:"10s" envconfig:"READ_TIMEOUT"`
 	IdleTimeout         time.Duration `default:"30s" envconfig:"IDLE_TIMEOUT"`
+	LogHttpRequest      bool          `default:"false" envconfig:"LOG_HTTP_REQUEST"`
+	LogLevel            string        `default:"WARN" envconfig:"LOG_LEVEL"`
 }
 
 func NewEnvVar() *EnvVar {
 	var env EnvVar
 	err := envconfig.Process("linktly", &env)
 	if err != nil {
-		log.Fatal(err.Error())
+		slog.Error(err.Error())
+		os.Exit(1)
 	}
 	return &env
 }

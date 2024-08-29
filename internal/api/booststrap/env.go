@@ -12,11 +12,11 @@ import (
 // FIXME: ENV VAR  FOR POSTGRES
 type EnvVar struct {
 	ServerAddress       string        `default:"8080" envconfig:"SERVER_ADDRESS"`
-	PostgresUser        string        `required:"true" envconfig:"POSTGRES_USER"`
-	PostgresHost        string        `required:"true" envconfig:"PGHOST"`
-	PostgresPort        int           `required:"true" envconfig:"PGPORT"`
-	PostgresDatabase    string        `required:"true" envconfig:"POSTGRES_DB"`
-	PostgresPassword    string        `required:"true" envconfig:"POSTGRES_PASSWORD"`
+	DBUser              string        `required:"true" envconfig:"DBUSER"`
+	DBHost              string        `required:"true" envconfig:"DBHOST"`
+	DBPort              int           `required:"true" envconfig:"DBPORT"`
+	DBName              string        `required:"true" envconfig:"DBNAME"`
+	DBPasword           string        `required:"true" envconfig:"DBPASSWORD"`
 	ShutdownGracePeriod time.Duration `default:"30s" envconfig:"SHUTDOWN_GRACE_PERIOD"`
 	WriteTimeout        time.Duration `default:"10s" envconfig:"WRITE_TIMEOUT"`
 	ReadTimeout         time.Duration `default:"10s" envconfig:"READ_TIMEOUT"`
@@ -28,11 +28,11 @@ type EnvVar struct {
 func (envVar EnvVar) GetDBConnectionString() string {
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s:%v/%s",
-		envVar.PostgresUser,
-		envVar.PostgresPassword,
-		envVar.PostgresHost,
-		envVar.PostgresPort,
-		envVar.PostgresDatabase,
+		envVar.DBUser,
+		envVar.DBPasword,
+		envVar.DBHost,
+		envVar.DBPort,
+		envVar.DBName,
 	)
 }
 

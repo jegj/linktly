@@ -67,6 +67,8 @@ func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 
 		// Trigger graceful shutdown
 		slog.Info("Shutting down the server gracefully...")
+		// Closing the db connection
+		s.Store.Close()
 		err := server.Shutdown(shutdownCtx)
 		if err != nil {
 			slog.Error(err.Error())

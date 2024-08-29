@@ -10,6 +10,7 @@
 main
 internal/database/local/
 internal/database/dev_scripts/
+tmp
 
 # Test binary, built with `go test -c`
 *.test

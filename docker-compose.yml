@@ -11,6 +11,8 @@ services:
       - ./:/app
     env_file:
       - ./configs/.env
+    environment:
+      PGHOST: postgres
     depends_on:
       - postgres
   postgres:

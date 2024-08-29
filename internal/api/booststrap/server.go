@@ -13,25 +13,27 @@ import (
 )
 
 type Server struct {
-	Env *EnvVar
-	// Mongo mongo.Client
+	Env    *EnvVar
 	router *chi.Mux
-
+	Store  *Store
 	// Slog var to allow change level on-the-fly
 	ServerLogVar *slog.LevelVar
 }
 
-func NewServer() *Server {
+func NewServer(ctx context.Context) *Server {
 	env := NewEnvVar()
+	store, err := NewStore(ctx, env.GetDBConnectionString())
+	if err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
 	server := &Server{
 		router:       chi.NewRouter(),
 		Env:          env,
 		ServerLogVar: SetUpLogger(env),
+		Store:        store,
 	}
-
 	server.routes()
-
-	// app.Mongo = NewMongoDatabase(app.Env)
 	return server
 }
 

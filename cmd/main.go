@@ -8,6 +8,6 @@ import (
 
 func main() {
 	serverCtx, serverStopCtx := context.WithCancel(context.Background())
-	server := bootstrap.NewServer()
+	server := bootstrap.NewServer(serverCtx)
 	server.Start(serverCtx, serverStopCtx)
 }

@@ -1,6 +1,7 @@
 package bootstrap
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 	"time"
@@ -8,9 +9,12 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
+// FIXME: ENV VAR  FOR POSTGRES
 type EnvVar struct {
 	ServerAddress       string        `default:"8080" envconfig:"SERVER_ADDRESS"`
 	PostgresUser        string        `required:"true" envconfig:"POSTGRES_USER"`
+	PostgresHost        string        `required:"true" envconfig:"PGHOST"`
+	PostgresPort        int           `required:"true" envconfig:"PGPORT"`
 	PostgresDatabase    string        `required:"true" envconfig:"POSTGRES_DB"`
 	PostgresPassword    string        `required:"true" envconfig:"POSTGRES_PASSWORD"`
 	ShutdownGracePeriod time.Duration `default:"30s" envconfig:"SHUTDOWN_GRACE_PERIOD"`
@@ -19,6 +23,17 @@ type EnvVar struct {
 	IdleTimeout         time.Duration `default:"30s" envconfig:"IDLE_TIMEOUT"`
 	LogHttpRequest      bool          `default:"false" envconfig:"LOG_HTTP_REQUEST"`
 	LogLevel            string        `default:"WARN" envconfig:"LOG_LEVEL"`
+}
+
+func (envVar EnvVar) GetDBConnectionString() string {
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%v/%s",
+		envVar.PostgresUser,
+		envVar.PostgresPassword,
+		envVar.PostgresHost,
+		envVar.PostgresPort,
+		envVar.PostgresDatabase,
+	)
 }
 
 func NewEnvVar() *EnvVar {

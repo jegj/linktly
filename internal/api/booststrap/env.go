@@ -9,7 +9,6 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
-// FIXME: ENV VAR  FOR POSTGRES
 type EnvVar struct {
 	ServerAddress       string        `default:"8080" envconfig:"SERVER_ADDRESS"`
 	DBUser              string        `required:"true" envconfig:"DBUSER"`

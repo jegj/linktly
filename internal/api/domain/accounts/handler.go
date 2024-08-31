@@ -7,7 +7,13 @@ import (
 	"github.com/go-chi/render"
 )
 
-func GetAccounts(w http.ResponseWriter, r *http.Request) {
+/*
+type AccountHandler {
+  AccountService
+}
+*/
+
+func GetAccountsHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("Debug message accoutns")
 	slog.Info("Info message accoutns")
 

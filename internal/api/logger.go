@@ -1,8 +1,10 @@
-package bootstrap
+package api
 
 import (
 	"log/slog"
 	"os"
+
+	"github.com/jegj/linktly/internal/config"
 )
 
 var LogLevels = map[string]slog.Level{
@@ -12,10 +14,10 @@ var LogLevels = map[string]slog.Level{
 	"ERROR": slog.LevelError,
 }
 
-func SetUpLogger(env *EnvVar) *slog.LevelVar {
+func SetUpLogger(cfg config.Config) *slog.LevelVar {
 	programLevel := new(slog.LevelVar)
 
-	level, exists := LogLevels[env.LogLevel]
+	level, exists := LogLevels[cfg.LogLevel]
 	if !exists {
 		level = slog.LevelWarn
 	}

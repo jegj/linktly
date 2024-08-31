@@ -1,4 +1,4 @@
-package bootstrap
+package api
 
 import (
 	"context"
@@ -10,27 +10,27 @@ import (
 	"syscall"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jegj/linktly/internal/config"
 )
 
 type Server struct {
-	Env    *EnvVar
+	config config.Config
 	router *chi.Mux
 	Store  *Store
 	// Slog var to allow change level on-the-fly
 	ServerLogVar *slog.LevelVar
 }
 
-func NewServer(ctx context.Context) *Server {
-	env := NewEnvVar()
-	store, err := NewStore(ctx, env.GetDBConnectionString())
+func NewServer(cfg config.Config, ctx context.Context) *Server {
+	store, err := NewStore(ctx, cfg.GetDBConnectionString())
 	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
 	server := &Server{
 		router:       chi.NewRouter(),
-		Env:          env,
-		ServerLogVar: SetUpLogger(env),
+		config:       cfg,
+		ServerLogVar: SetUpLogger(cfg),
 		Store:        store,
 	}
 	server.routes()
@@ -39,11 +39,11 @@ func NewServer(ctx context.Context) *Server {
 
 func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 	server := http.Server{
-		Addr:         s.Env.ServerAddress,
+		Addr:         s.config.ServerAddress,
 		Handler:      s.router,
-		IdleTimeout:  s.Env.IdleTimeout,
-		ReadTimeout:  s.Env.ReadTimeout,
-		WriteTimeout: s.Env.WriteTimeout,
+		IdleTimeout:  s.config.IdleTimeout,
+		ReadTimeout:  s.config.ReadTimeout,
+		WriteTimeout: s.config.WriteTimeout,
 	}
 
 	// Listen for syscall signals for process to interrupt/quit
@@ -54,7 +54,7 @@ func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 		<-sig
 
 		// Shutdown signal with grace period of 30 seconds
-		shutdownCtx, shutdownCancelFunc := context.WithTimeout(ctx, s.Env.ShutdownGracePeriod)
+		shutdownCtx, shutdownCancelFunc := context.WithTimeout(ctx, s.config.ShutdownGracePeriod)
 		defer shutdownCancelFunc()
 
 		go func() {

@@ -1,4 +1,4 @@
-package bootstrap
+package config
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
-type EnvVar struct {
+type Config struct {
 	ServerAddress       string        `default:"8080" envconfig:"SERVER_ADDRESS"`
 	DBUser              string        `required:"true" envconfig:"DBUSER"`
 	DBHost              string        `required:"true" envconfig:"DBHOST"`
@@ -24,7 +24,7 @@ type EnvVar struct {
 	LogLevel            string        `default:"WARN" envconfig:"LOG_LEVEL"`
 }
 
-func (envVar EnvVar) GetDBConnectionString() string {
+func (envVar Config) GetDBConnectionString() string {
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s:%v/%s",
 		envVar.DBUser,
@@ -35,12 +35,12 @@ func (envVar EnvVar) GetDBConnectionString() string {
 	)
 }
 
-func NewEnvVar() *EnvVar {
-	var env EnvVar
+func NewConfig() Config {
+	var env Config
 	err := envconfig.Process("linktly", &env)
 	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
-	return &env
+	return env
 }

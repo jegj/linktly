@@ -1,13 +1,12 @@
-package bootstrap
+package api
 
 import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jegj/linktly/internal/api/domain/accounts"
-	"github.com/jegj/linktly/internal/api/domain/maintance"
 )
 
 func (s *Server) routes() {
-	if s.Env.LogHttpRequest {
+	if s.config.LogHttpRequest {
 		s.router.Use(middleware.Logger)
 	}
 	s.router.Use(middleware.Recoverer)
@@ -16,6 +15,6 @@ func (s *Server) routes() {
 	s.router.Use(middleware.Heartbeat("/ping"))
 
 	// TODO: Pass dbstore
-	accounts.LoadRoutes(s.router)
-	maintance.LoadRoutes(s.router, s.ServerLogVar)
+	accounts.LoadRoutes(s.router, s.config)
+	// maintance.LoadRoutes(s.router, s.ServerLogVar)
 }

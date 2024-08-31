@@ -1,7 +1,6 @@
 package accounts
 
 import (
-	"net/http"
 	"time"
 )
 
@@ -15,14 +14,4 @@ type Account struct {
 	Role      string    `db:"role" json:"role"`
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
-}
-
-type AccountResp struct {
-	*Account
-	Password *struct{} `json:"password,omitempty"`
-}
-
-// Render implements render.Renderer.
-func (rd *AccountResp) Render(w http.ResponseWriter, r *http.Request) error {
-	return nil
 }

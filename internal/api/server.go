@@ -11,18 +11,19 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jegj/linktly/internal/config"
+	"github.com/jegj/linktly/internal/store"
 )
 
 type Server struct {
 	config config.Config
 	router *chi.Mux
-	Store  *Store
+	Store  *store.Store
 	// Slog var to allow change level on-the-fly
 	ServerLogVar *slog.LevelVar
 }
 
 func NewServer(cfg config.Config, ctx context.Context) *Server {
-	store, err := NewStore(ctx, cfg.GetDBConnectionString())
+	store, err := store.NewStore(ctx, cfg.GetDBConnectionString())
 	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)

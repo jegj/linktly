@@ -34,7 +34,7 @@ func NewServer(cfg config.Config, ctx context.Context) *Server {
 		serverLogVar: SetUpLogger(cfg),
 		store:        store,
 	}
-	server.routes()
+	server.routes(ctx)
 	return server
 }
 

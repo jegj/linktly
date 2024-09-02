@@ -14,7 +14,7 @@ var (
 )
 
 type Store struct {
-	source *pgxpool.Pool
+	Source *pgxpool.Pool
 }
 
 func NewStore(ctx context.Context, connString string) (*Store, error) {
@@ -26,13 +26,13 @@ func NewStore(ctx context.Context, connString string) (*Store, error) {
 		dbErr = pgInstance.Ping(ctx)
 	})
 
-	return &Store{source: pgInstance}, dbErr
+	return &Store{Source: pgInstance}, dbErr
 }
 
 func (store *Store) Ping(ctx context.Context) error {
-	return store.source.Ping(ctx)
+	return store.Source.Ping(ctx)
 }
 
 func (store *Store) Close() {
-	store.source.Close()
+	store.Source.Close()
 }

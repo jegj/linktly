@@ -17,9 +17,9 @@ import (
 type Server struct {
 	config config.Config
 	router *chi.Mux
-	Store  *store.Store
+	store  *store.Store
 	// Slog var to allow change level on-the-fly
-	ServerLogVar *slog.LevelVar
+	serverLogVar *slog.LevelVar
 }
 
 func NewServer(cfg config.Config, ctx context.Context) *Server {
@@ -31,8 +31,8 @@ func NewServer(cfg config.Config, ctx context.Context) *Server {
 	server := &Server{
 		router:       chi.NewRouter(),
 		config:       cfg,
-		ServerLogVar: SetUpLogger(cfg),
-		Store:        store,
+		serverLogVar: SetUpLogger(cfg),
+		store:        store,
 	}
 	server.routes()
 	return server
@@ -69,7 +69,7 @@ func (s *Server) Start(ctx context.Context, serverStopCtx context.CancelFunc) {
 		// Trigger graceful shutdown
 		slog.Info("Shutting down the server gracefully...")
 		// Closing the db connection
-		s.Store.Close()
+		s.store.Close()
 		err := server.Shutdown(shutdownCtx)
 		if err != nil {
 			slog.Error(err.Error())

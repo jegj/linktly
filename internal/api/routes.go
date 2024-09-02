@@ -14,7 +14,6 @@ func (s *Server) routes() {
 	s.router.Use(middleware.CleanPath)
 	s.router.Use(middleware.Heartbeat("/ping"))
 
-	// TODO: Pass dbstore
-	accounts.LoadRoutes(s.router, s.config)
+	accounts.LoadRoutes(s.router, s.config, s.store)
 	// maintance.LoadRoutes(s.router, s.ServerLogVar)
 }

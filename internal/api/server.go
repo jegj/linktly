@@ -15,15 +15,14 @@ import (
 )
 
 type Server struct {
-	config config.Config
-	router *chi.Mux
-	store  *store.Store
-	// Slog var to allow change level on-the-fly
-	serverLogVar *slog.LevelVar
+	config       config.Config
+	router       *chi.Mux
+	store        *store.PostgresStore
+	serverLogVar *slog.LevelVar // Slog var to allow change level on-the-fly
 }
 
 func NewServer(cfg config.Config, ctx context.Context) *Server {
-	store, err := store.NewStore(ctx, cfg.GetDBConnectionString())
+	store, err := store.NewPostgresStore(ctx, cfg.GetDBConnectionString())
 	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)

@@ -8,7 +8,7 @@ import (
 	"github.com/jegj/linktly/internal/store"
 )
 
-func LoadRoutes(ctx context.Context, r chi.Router, config config.Config, store *store.Store) {
+func LoadRoutes(ctx context.Context, r chi.Router, config config.Config, store *store.PostgresStore) {
 	accountRepository := GetNewAccountRepository(store)
 	accountService := AccountService{
 		ctx:        ctx,

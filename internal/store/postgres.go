@@ -13,11 +13,11 @@ var (
 	dbErr      error
 )
 
-type Store struct {
+type PostgresStore struct {
 	Source *pgxpool.Pool
 }
 
-func NewStore(ctx context.Context, connString string) (*Store, error) {
+func NewPostgresStore(ctx context.Context, connString string) (*PostgresStore, error) {
 	pgOnce.Do(func() {
 		pgInstance, dbErr = pgxpool.New(ctx, connString)
 		if dbErr != nil {
@@ -26,13 +26,13 @@ func NewStore(ctx context.Context, connString string) (*Store, error) {
 		dbErr = pgInstance.Ping(ctx)
 	})
 
-	return &Store{Source: pgInstance}, dbErr
+	return &PostgresStore{Source: pgInstance}, dbErr
 }
 
-func (store *Store) Ping(ctx context.Context) error {
+func (store *PostgresStore) Ping(ctx context.Context) error {
 	return store.Source.Ping(ctx)
 }
 
-func (store *Store) Close() {
+func (store *PostgresStore) Close() {
 	store.Source.Close()
 }

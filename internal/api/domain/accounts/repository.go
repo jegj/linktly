@@ -12,10 +12,10 @@ type accountsRepository interface {
 }
 
 type PostgresRepository struct {
-	store *store.Store
+	store *store.PostgresStore
 }
 
-func GetNewAccountRepository(store *store.Store) *PostgresRepository {
+func GetNewAccountRepository(store *store.PostgresStore) *PostgresRepository {
 	return &PostgresRepository{
 		store: store,
 	}

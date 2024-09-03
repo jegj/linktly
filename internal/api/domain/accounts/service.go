@@ -1,7 +1,12 @@
 package accounts
 
-import "errors"
+import "context"
 
-func GetAccounts() (error, *Account) {
-	return errors.New("not implemented"), nil
+type AccountService struct {
+	ctx        context.Context
+	repository accountsRepository
+}
+
+func (s *AccountService) GetAccountById(id string) (*Account, error) {
+	return s.repository.GetByID(s.ctx, id)
 }

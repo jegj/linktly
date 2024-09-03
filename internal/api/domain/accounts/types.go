@@ -5,7 +5,7 @@ import (
 )
 
 type Account struct {
-	Id        string    `db:"release_date" json:"id"`
+	Id        string    `db:"id" json:"id"`
 	Name      string    `db:"name" json:"name"`
 	LastName  string    `db:"lastname" json:"lastname"`
 	Email     string    `db:"email" json:"email"`

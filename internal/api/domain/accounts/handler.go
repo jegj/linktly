@@ -1,10 +1,13 @@
 package accounts
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/go-playground/validator/v10"
 	"github.com/jegj/linktly/internal/api/types"
 )
 
@@ -12,17 +15,32 @@ type AccountHandler struct {
 	service AccountService
 }
 
-func (s AccountHandler) GetAccountsHandler(w http.ResponseWriter, r *http.Request) {
-	slog.Debug("Debug message accoutns")
-	slog.Info("Info message accoutns")
+func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("Debug message accounts")
+	slog.Info("Info message accounts")
 
-	account, error := s.service.GetAccountById("0191b574-3e8f-7e79-9848-4f9bb436e4b2")
+	id := chi.URLParam(r, "id")
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	// FIXME: errs comes with an empty key
+	errs := validate.Var(id, "required,uuid")
+
+	if errs != nil {
+		fmt.Println(errs) // output: Key: "" Error:Field validation for "" failed on the "email" tag
+		err := render.Render(w, r, types.NewLinktlyError(errs, http.StatusBadRequest, http.StatusText(http.StatusBadRequest)))
+		if err != nil {
+			slog.Error(err.Error())
+		}
+		return
+	}
+
+	account, error := s.service.GetAccountById(id)
 
 	if error != nil {
 		err := render.Render(w, r, types.NewLinktlyError(error, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)))
 		if err != nil {
 			slog.Error(err.Error())
 		}
+		return
 	} else {
 		resp := &AccountResp{
 			Account: account,
@@ -32,5 +50,6 @@ func (s AccountHandler) GetAccountsHandler(w http.ResponseWriter, r *http.Reques
 		if err != nil {
 			slog.Error(err.Error())
 		}
+		return
 	}
 }

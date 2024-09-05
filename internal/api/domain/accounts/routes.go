@@ -20,5 +20,6 @@ func LoadRoutes(ctx context.Context, r chi.Router, config config.Config, store *
 
 	r.Route("/api/v1/accounts", func(r chi.Router) {
 		r.Get("/{id}", accountHandler.GetAccountByIdHandler)
+		r.Post("/", accountHandler.CreateAccount)
 	})
 }

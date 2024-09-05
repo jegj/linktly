@@ -35,6 +35,8 @@ func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Req
 
 	account, error := s.service.GetAccountById(id)
 
+	fmt.Printf("==========>%v", error)
+
 	if error != nil {
 		err := render.Render(w, r, types.NewLinktlyError(error, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)))
 		if err != nil {
@@ -47,6 +49,37 @@ func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Req
 		}
 		render.Status(r, http.StatusOK)
 		err := render.Render(w, r, resp)
+		if err != nil {
+			slog.Error(err.Error())
+		}
+		return
+	}
+}
+
+func (s AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
+	data := &AccountReq{}
+	if err := render.Bind(r, data); err != nil {
+		err := render.Render(w, r, types.NewLinktlyError(err, http.StatusBadRequest, http.StatusText(http.StatusBadRequest)))
+		if err != nil {
+			slog.Error(err.Error())
+		}
+		return
+	}
+	account := data.Account
+	newId, err := s.service.CreateAccount(account)
+	if err != nil {
+		error := render.Render(w, r, types.NewLinktlyError(err, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)))
+		if error != nil {
+			slog.Error(error.Error())
+		}
+		return
+	} else {
+		account.Id = newId
+		resp := &AccountResp{
+			Account: account,
+		}
+		render.Status(r, http.StatusCreated)
+		err = render.Render(w, r, resp)
 		if err != nil {
 			slog.Error(err.Error())
 		}

@@ -10,3 +10,7 @@ type AccountService struct {
 func (s *AccountService) GetAccountById(id string) (*Account, error) {
 	return s.repository.GetByID(s.ctx, id)
 }
+
+func (s *AccountService) CreateAccount(account *Account) (string, error) {
+	return s.repository.CreateAccount(s.ctx, account)
+}

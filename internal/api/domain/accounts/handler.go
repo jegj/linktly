@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
+	"github.com/jackc/pgx/v5"
 	"github.com/jegj/linktly/internal/api/types"
 )
 
@@ -35,7 +36,7 @@ func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Req
 
 	account, error := s.service.GetAccountById(id)
 
-	fmt.Printf("==========>%v", error)
+	fmt.Printf("==========>%+v,----->%+v", error, pgx.ErrNoRows)
 
 	if error != nil {
 		err := render.Render(w, r, types.NewLinktlyError(error, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)))
@@ -57,6 +58,7 @@ func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Req
 }
 
 func (s AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
+	// TODO: Add validations
 	data := &AccountReq{}
 	if err := render.Bind(r, data); err != nil {
 		err := render.Render(w, r, types.NewLinktlyError(err, http.StatusBadRequest, http.StatusText(http.StatusBadRequest)))

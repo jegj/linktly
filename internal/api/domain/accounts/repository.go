@@ -23,8 +23,7 @@ func GetNewAccountRepository(store *store.PostgresStore) *PostgresRepository {
 }
 
 func (repo *PostgresRepository) GetByID(ctx context.Context, id string) (*Account, error) {
-	// FIXME: Select all the columns ? number of field descriptions must equal number of destinations, got 6 and 9
-	query := `SELECT id, name, lastname, email, role, created_at FROM linktly.accounts WHERE id = $1`
+	query := `SELECT name, lastname, email, role, created_at FROM linktly.accounts WHERE id = $1`
 
 	var name string
 	var lastname string
@@ -38,6 +37,7 @@ func (repo *PostgresRepository) GetByID(ctx context.Context, id string) (*Accoun
 	}
 
 	account := Account{
+		Id:        id,
 		Name:      name,
 		LastName:  lastname,
 		Email:     email,

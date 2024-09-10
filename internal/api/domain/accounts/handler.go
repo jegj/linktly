@@ -1,14 +1,12 @@
 package accounts
 
 import (
-	"fmt"
 	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
-	"github.com/jackc/pgx/v5"
 	"github.com/jegj/linktly/internal/api/types"
 )
 
@@ -23,11 +21,13 @@ func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Req
 	id := chi.URLParam(r, "id")
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	// FIXME: errs comes with an empty key
+	// fmt.Println(errs) // output: Key: "" Error:Field validation for "" failed on the "email" tag
 	errs := validate.Var(id, "required,uuid")
 
 	if errs != nil {
-		fmt.Println(errs) // output: Key: "" Error:Field validation for "" failed on the "email" tag
-		err := render.Render(w, r, types.NewLinktlyError(errs, http.StatusBadRequest, http.StatusText(http.StatusBadRequest)))
+		builder := types.LinktlyErrorBuilder{}
+		renderError := builder.WithError(errs).Build()
+		err := render.Render(w, r, &renderError)
 		if err != nil {
 			slog.Error(err.Error())
 		}
@@ -35,11 +35,10 @@ func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	account, error := s.service.GetAccountById(id)
-
-	fmt.Printf("==========>%+v,----->%+v", error, pgx.ErrNoRows)
-
+	builder := types.LinktlyErrorBuilder{}
+	renderError := builder.WithError(error).Build()
 	if error != nil {
-		err := render.Render(w, r, types.NewLinktlyError(error, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)))
+		err := render.Render(w, r, &renderError)
 		if err != nil {
 			slog.Error(err.Error())
 		}

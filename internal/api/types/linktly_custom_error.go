@@ -2,9 +2,12 @@ package types
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/render"
+	"github.com/go-playground/validator/v10"
+	"github.com/jackc/pgx/v5"
 )
 
 type LinktlyError struct {
@@ -37,6 +40,45 @@ type LinktlyErrorBuilder struct {
 
 func (b *LinktlyErrorBuilder) WithHttpStatusCode(httpStatusCode int) *LinktlyErrorBuilder {
 	b.HTTPStatusCode = &httpStatusCode
+	statusText := http.StatusText(httpStatusCode)
+	b.StatusText = &statusText
+	return b
+}
+
+func (b *LinktlyErrorBuilder) WithError(err error) *LinktlyErrorBuilder {
+	errMessage := err.Error()
+	errorText := ""
+	httpStatusCode := 0
+	httpStatusText := ""
+	var validationError *validator.InvalidValidationError
+
+	fmt.Printf("====>%v", err)
+	fmt.Printf("====>%v", errors.As(err, &validationError))
+
+	if invalidErr, ok := err.(*validator.InvalidValidationError); ok {
+		fmt.Println("is invalid error vlaidation\n")
+	}
+
+	if errors.As(err, &validationError) {
+		httpStatusCode = http.StatusBadRequest
+		httpStatusText = http.StatusText(http.StatusBadRequest)
+		errorText = "Not found entity"
+	} else if errors.Is(err, pgx.ErrNoRows) {
+		httpStatusCode = http.StatusNotFound
+		httpStatusText = http.StatusText(http.StatusNotFound)
+		errorText = "Not found entity"
+	} else {
+		httpStatusCode = http.StatusInternalServerError
+		httpStatusText = http.StatusText(http.StatusInternalServerError)
+		errorText = "Something worng happeneded"
+	}
+
+	b.Err = &err
+	b.ErrorText = &errMessage
+	b.ErrorText = &errorText
+	b.HTTPStatusCode = &httpStatusCode
+	b.StatusText = &httpStatusText
+
 	return b
 }
 

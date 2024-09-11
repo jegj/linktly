@@ -4,3 +4,7 @@ run:
 	./scripts/run_dev.sh
 test:
 	go test -v ./...
+vet:
+	go vet cmd/main.go
+vet_shadow:
+	go vet -vettool=$(which shadow) cmd/main.go

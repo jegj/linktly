@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/render"
-	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type LinktlyError struct {
@@ -38,6 +38,7 @@ type LinktlyErrorBuilder struct {
 	ErrorText      *string
 }
 
+// Overwrite the http status code and StatusText
 func (b *LinktlyErrorBuilder) WithHttpStatusCode(httpStatusCode int) *LinktlyErrorBuilder {
 	b.HTTPStatusCode = &httpStatusCode
 	statusText := http.StatusText(httpStatusCode)
@@ -45,32 +46,31 @@ func (b *LinktlyErrorBuilder) WithHttpStatusCode(httpStatusCode int) *LinktlyErr
 	return b
 }
 
+// Set response based on an error using generic http 500 error and StatusText by default
 func (b *LinktlyErrorBuilder) WithError(err error) *LinktlyErrorBuilder {
 	errMessage := err.Error()
 	errorText := ""
 	httpStatusCode := 0
 	httpStatusText := ""
-	var validationError *validator.InvalidValidationError
 
-	fmt.Printf("====>%v", err)
-	fmt.Printf("====>%v", errors.As(err, &validationError))
-
-	if invalidErr, ok := err.(*validator.InvalidValidationError); ok {
-		fmt.Println("is invalid error vlaidation\n")
-	}
-
-	if errors.As(err, &validationError) {
-		httpStatusCode = http.StatusBadRequest
-		httpStatusText = http.StatusText(http.StatusBadRequest)
-		errorText = "Not found entity"
-	} else if errors.Is(err, pgx.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		httpStatusCode = http.StatusNotFound
 		httpStatusText = http.StatusText(http.StatusNotFound)
 		errorText = "Not found entity"
+	} else if pgErr, ok := err.(*pgconn.PgError); ok {
+		if pgErr.Code == "23505" {
+			httpStatusCode = http.StatusConflict
+			httpStatusText = http.StatusText(http.StatusConflict)
+			errorText = err.Error()
+		} else {
+			httpStatusCode = http.StatusInternalServerError
+			httpStatusText = http.StatusText(http.StatusInternalServerError)
+			errorText = fmt.Sprintf("Database error: %s", err.Error())
+		}
 	} else {
 		httpStatusCode = http.StatusInternalServerError
 		httpStatusText = http.StatusText(http.StatusInternalServerError)
-		errorText = "Something worng happeneded"
+		errorText = err.Error()
 	}
 
 	b.Err = &err

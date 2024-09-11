@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func TestNewLinktlyErrorBuilderDefaultValues(t *testing.T) {
+func TestLinktlyErrorBuilderDefaultValues(t *testing.T) {
 	builder := LinktlyErrorBuilder{}
 	linktlyError := builder.Build()
 
@@ -24,7 +24,24 @@ func TestNewLinktlyErrorBuilderDefaultValues(t *testing.T) {
 	}
 }
 
-func TestNewLinktlyErrorBuilderNoRowsFromDatabaseError(t *testing.T) {
+func TestLinktlyErrorBuilderWithHttpStatusCode(t *testing.T) {
+	builder := LinktlyErrorBuilder{}
+	linktlyError := builder.WithHttpStatusCode(http.StatusGatewayTimeout).Build()
+
+	if linktlyError.HTTPStatusCode != http.StatusGatewayTimeout {
+		t.Errorf("expected http.StatusGatewayTimeout but got '%d'", linktlyError.HTTPStatusCode)
+	}
+
+	if linktlyError.StatusText != http.StatusText(http.StatusGatewayTimeout) {
+		t.Errorf("expected Status text for http.StatusGatewayTimeout but got '%s'", linktlyError.StatusText)
+	}
+
+	if linktlyError.ErrorText != "Unknown error" {
+		t.Errorf("expected 'Unknown error' by default but got '%s'", linktlyError.ErrorText)
+	}
+}
+
+func TestLinktlyErrorBuilderNoRowsFromDatabaseError(t *testing.T) {
 	builder := LinktlyErrorBuilder{}
 	err := pgx.ErrNoRows
 	builder.WithError(err)

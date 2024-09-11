@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 	"github.com/jegj/linktly/internal/api/types"
+	"github.com/jegj/linktly/internal/api/validations"
 )
 
 type AccountHandler struct {
@@ -15,18 +16,19 @@ type AccountHandler struct {
 }
 
 func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Request) {
-	slog.Debug("Debug message accounts")
-	slog.Info("Info message accounts")
+	// slog.Debug("Debug message accounts")
+	// slog.Info("Info message accounts")
 
 	id := chi.URLParam(r, "id")
+	req := GetAccountByIdHandlerReq{
+		Id: id,
+	}
 	validate := validator.New(validator.WithRequiredStructEnabled())
-	// FIXME: errs comes with an empty key
-	// fmt.Println(errs) // output: Key: "" Error:Field validation for "" failed on the "email" tag
-	errs := validate.Var(id, "required,uuid")
+	errs := validate.Struct(req)
 
 	if errs != nil {
 		builder := types.LinktlyErrorBuilder{}
-		renderError := builder.WithError(errs).Build()
+		renderError := builder.WithError(errs).WithHttpStatusCode(http.StatusBadRequest).Build()
 		err := render.Render(w, r, &renderError)
 		if err != nil {
 			slog.Error(err.Error())
@@ -57,8 +59,7 @@ func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Req
 }
 
 func (s AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
-	// TODO: Add validations
-	data := &AccountReq{}
+	data := &CreateAccountReq{}
 	if err := render.Bind(r, data); err != nil {
 		err := render.Render(w, r, types.NewLinktlyError(err, http.StatusBadRequest, http.StatusText(http.StatusBadRequest)))
 		if err != nil {
@@ -66,10 +67,40 @@ func (s AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	account := data.Account
+
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	if err := validate.RegisterValidation("password", validations.PasswordValidation); err != nil {
+		err := render.Render(w, r, types.NewLinktlyError(err, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)))
+		if err != nil {
+			slog.Error(err.Error())
+		}
+		return
+	}
+	errs := validate.Struct(data)
+
+	if errs != nil {
+		builder := types.LinktlyErrorBuilder{}
+		renderError := builder.WithError(errs).WithHttpStatusCode(http.StatusBadRequest).Build()
+		err := render.Render(w, r, &renderError)
+		if err != nil {
+			slog.Error(err.Error())
+		}
+		return
+	}
+
+	account := &Account{
+		Name:     data.Name,
+		LastName: data.LastName,
+		Password: data.Password,
+		Email:    data.Email,
+	}
+
 	newId, err := s.service.CreateAccount(account)
 	if err != nil {
-		error := render.Render(w, r, types.NewLinktlyError(err, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)))
+
+		builder := types.LinktlyErrorBuilder{}
+		renderError := builder.WithError(err).Build()
+		error := render.Render(w, r, &renderError)
 		if error != nil {
 			slog.Error(error.Error())
 		}

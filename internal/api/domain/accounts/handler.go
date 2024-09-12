@@ -95,7 +95,7 @@ func (s AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 		Email:    data.Email,
 	}
 
-	newId, err := s.service.CreateAccount(account)
+	account, err := s.service.CreateAccount(account)
 	if err != nil {
 
 		builder := types.LinktlyErrorBuilder{}
@@ -106,7 +106,6 @@ func (s AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	} else {
-		account.Id = newId
 		resp := &AccountResp{
 			Account: account,
 		}

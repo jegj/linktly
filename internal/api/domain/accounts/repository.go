@@ -2,8 +2,13 @@ package accounts
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"net/http"
 	"time"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jegj/linktly/internal/api/types"
 	"github.com/jegj/linktly/internal/store"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -34,7 +39,17 @@ func (repo *PostgresRepository) GetByID(ctx context.Context, id string) (*Accoun
 
 	err := repo.store.Source.QueryRow(ctx, query, id).Scan(&name, &lastname, &email, &role, &createdAt)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, types.APIError{
+				Msg:        fmt.Sprintf("Acount not found for id %v", id),
+				StatusCode: http.StatusNotFound,
+			}
+		} else {
+			return nil, types.APIError{
+				Msg:        err.Error(),
+				StatusCode: http.StatusInternalServerError,
+			}
+		}
 	}
 
 	account := Account{

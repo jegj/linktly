@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jegj/linktly/internal/api/types"
 	"github.com/jegj/linktly/internal/store"
 	"golang.org/x/crypto/bcrypt"
@@ -71,13 +72,33 @@ func (repo *PostgresRepository) CreateAccount(ctx context.Context, account *Acco
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(account.Password), 15)
 	if err != nil {
-		return nil, err
+		return nil, types.APIError{
+			Msg:        err.Error(),
+			StatusCode: http.StatusInternalServerError,
+		}
 	}
 
 	query := `INSERT INTO linktly.accounts(name, lastname, email, password ) VALUES($1,$2,$3,$4) RETURNING id, created_at, role`
 	err = repo.store.Source.QueryRow(ctx, query, account.Name, account.LastName, account.Email, string(hashedPassword)).Scan(&id, &createdAt, &role)
 	if err != nil {
-		return nil, err
+		if pgErr, ok := err.(*pgconn.PgError); ok {
+			if pgErr.Code == "23505" {
+				return nil, types.APIError{
+					Msg:        err.Error(),
+					StatusCode: http.StatusConflict,
+				}
+			} else {
+				return nil, types.APIError{
+					Msg:        err.Error(),
+					StatusCode: http.StatusInternalServerError,
+				}
+			}
+		} else {
+			return nil, types.APIError{
+				Msg:        err.Error(),
+				StatusCode: http.StatusInternalServerError,
+			}
+		}
 	}
 
 	account.Id = id

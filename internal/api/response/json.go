@@ -18,3 +18,10 @@ func InvalidRequestData(errors map[string]string) types.APIError {
 		StatusCode: http.StatusBadRequest,
 	}
 }
+
+func InvalidJsonRequest() types.APIError {
+	return types.APIError{
+		Msg:        "Invalid JSON request data",
+		StatusCode: http.StatusBadRequest,
+	}
+}

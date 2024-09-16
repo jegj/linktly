@@ -4,8 +4,11 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 	"github.com/jegj/linktly/internal/api/response"
+	"github.com/jegj/linktly/internal/api/types"
+	"github.com/jegj/linktly/internal/api/validations"
 )
 
 type AccountHandler struct {
@@ -37,35 +40,28 @@ func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Req
 	}
 }
 
-/*
-func (s AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
+func (s AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) error {
 	data := &CreateAccountReq{}
 	if err := render.Bind(r, data); err != nil {
-		err := render.Render(w, r, types.NewLinktlyError(err, http.StatusBadRequest, http.StatusText(http.StatusBadRequest)))
-		if err != nil {
-			slog.Error(err.Error())
-		}
-		return
+		return response.InvalidJsonRequest()
 	}
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	if err := validate.RegisterValidation("password", validations.PasswordValidation); err != nil {
-		err := render.Render(w, r, types.NewLinktlyError(err, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)))
-		if err != nil {
-			slog.Error(err.Error())
+		return types.APIError{
+			Msg:        err.Error(),
+			StatusCode: http.StatusInternalServerError,
 		}
-		return
 	}
 	errs := validate.Struct(data)
-
 	if errs != nil {
-		builder := types.LinktlyErrorBuilder{}
-		renderError := builder.WithError(errs).WithHttpStatusCode(http.StatusBadRequest).Build()
-		err := render.Render(w, r, &renderError)
-		if err != nil {
-			slog.Error(err.Error())
+		validationErrors := make(map[string]string)
+		// Cast the error to a ValidationErrors type
+		for _, err := range errs.(validator.ValidationErrors) {
+			// Extract the field name and error message
+			validationErrors[err.Field()] = err.Error()
 		}
-		return
+		return response.InvalidRequestData(validationErrors)
 	}
 
 	account := &Account{
@@ -77,24 +73,11 @@ func (s AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 
 	account, err := s.service.CreateAccount(account)
 	if err != nil {
-
-		builder := types.LinktlyErrorBuilder{}
-		renderError := builder.WithError(err).Build()
-		error := render.Render(w, r, &renderError)
-		if error != nil {
-			slog.Error(error.Error())
-		}
-		return
+		return err
 	} else {
 		resp := &AccountResp{
 			Account: account,
 		}
-		render.Status(r, http.StatusCreated)
-		err = render.Render(w, r, resp)
-		if err != nil {
-			slog.Error(err.Error())
-		}
-		return
+		return response.WriteJSON(w, r, http.StatusCreated, resp)
 	}
 }
-*/

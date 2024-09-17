@@ -1,12 +1,12 @@
 package auth
 
 import (
-	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
+	"github.com/jegj/linktly/internal/api/response"
 	"github.com/jegj/linktly/internal/api/types"
 	"github.com/jegj/linktly/internal/api/validations"
 )
@@ -15,48 +15,36 @@ type AuthHandler struct {
 	service AuthService
 }
 
-func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-	// slog.Debug("Debug message accounts")
-	// slog.Info("Info message accounts")
+func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) error {
 	data := &LoginReq{}
 	if err := render.Bind(r, data); err != nil {
-		err := render.Render(w, r, types.NewLinktlyError(err, http.StatusBadRequest, http.StatusText(http.StatusBadRequest)))
-		if err != nil {
-			slog.Error(err.Error())
-		}
-		return
+		return response.InvalidJsonRequest()
 	}
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	if err := validate.RegisterValidation("password", validations.PasswordValidation); err != nil {
-		err := render.Render(w, r, types.NewLinktlyError(err, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError)))
-		if err != nil {
-			slog.Error(err.Error())
+		return types.APIError{
+			Msg:        err.Error(),
+			StatusCode: http.StatusInternalServerError,
 		}
-		return
 	}
 
 	errs := validate.Struct(data)
 	if errs != nil {
-		builder := types.LinktlyErrorBuilder{}
-		renderError := builder.WithError(errs).WithHttpStatusCode(http.StatusBadRequest).Build()
-		err := render.Render(w, r, &renderError)
-		if err != nil {
-			slog.Error(err.Error())
+		validationErrors := make(map[string]string)
+		// Cast the error to a ValidationErrors type
+		for _, err := range errs.(validator.ValidationErrors) {
+			// Extract the field name and error message
+			validationErrors[err.Field()] = err.Error()
 		}
-		return
+		return response.InvalidRequestData(validationErrors)
 	}
 
 	_, error := a.service.Login(data.Email, data.Password)
 	if error != nil {
-		builder := types.LinktlyErrorBuilder{}
-		renderError := builder.WithError(error).Build()
-		error := render.Render(w, r, &renderError)
-		if error != nil {
-			slog.Error(error.Error())
-		}
-		return
+		return error
 	} else {
+		// TODO: IMPROVE THIS
 		http.SetCookie(w, &http.Cookie{
 			Name:     "example_cookie",
 			Value:    "cookie_value",
@@ -65,5 +53,6 @@ func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 			HttpOnly: true,  // For security, HttpOnly cookies are not accessible via JavaScript
 			Secure:   false, // Set to true if using HTTPS
 		})
+		return nil
 	}
 }

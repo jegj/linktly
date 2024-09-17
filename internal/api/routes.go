@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jegj/linktly/internal/api/domain/accounts"
+	"github.com/jegj/linktly/internal/api/domain/auth"
 )
 
 func (s *Server) routes(ctx context.Context) {
@@ -17,5 +18,6 @@ func (s *Server) routes(ctx context.Context) {
 	s.router.Use(middleware.Heartbeat("/ping"))
 
 	accounts.LoadRoutes(ctx, s.router, s.config, s.store)
+	auth.LoadRoutes(ctx, s.router, s.config, s.store)
 	// maintance.LoadRoutes(s.router, s.ServerLogVar)
 }

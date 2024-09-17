@@ -2,9 +2,14 @@ package auth
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"net/http"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jegj/linktly/internal/api/domain/accounts"
+	"github.com/jegj/linktly/internal/api/types"
 	"github.com/jegj/linktly/internal/store"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -33,15 +38,27 @@ func (repo *PostgresRepository) Login(ctx context.Context, email string, passwor
 	var role int
 	var createdAt time.Time
 
-	err := repo.store.Source.QueryRow(ctx, query, email, password).Scan(&id, &dbPassword, &name, &lastname, &role, &createdAt)
+	err := repo.store.Source.QueryRow(ctx, query, email).Scan(&id, &dbPassword, &name, &lastname, &role, &createdAt)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, types.APIError{
+				Msg:        fmt.Sprintf("Acount not found for email %s", email),
+				StatusCode: http.StatusNotFound,
+			}
+		} else {
+			return nil, types.APIError{
+				Msg:        err.Error(),
+				StatusCode: http.StatusInternalServerError,
+			}
+		}
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(password))
 	if err != nil {
-		// TODO: Check missmatch
-		return nil, err
+		return nil, types.APIError{
+			Msg:        err.Error(),
+			StatusCode: http.StatusUnauthorized,
+		}
 	}
 
 	account := accounts.Account{

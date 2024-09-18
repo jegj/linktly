@@ -10,18 +10,19 @@ import (
 )
 
 type Config struct {
-	ServerAddress       string        `default:"8080" envconfig:"SERVER_ADDRESS"`
+	LogLevel            string        `default:"WARN" envconfig:"LOG_LEVEL"`
 	DBUser              string        `required:"true" envconfig:"DBUSER"`
 	DBHost              string        `required:"true" envconfig:"DBHOST"`
-	DBPort              int           `required:"true" envconfig:"DBPORT"`
+	JwtSecret           string        `required:"true" envconfig:"JWT_SECRET"`
 	DBName              string        `required:"true" envconfig:"DBNAME"`
 	DBPasword           string        `required:"true" envconfig:"DBPASSWORD"`
+	ServerAddress       string        `default:"8080" envconfig:"SERVER_ADDRESS"`
 	ShutdownGracePeriod time.Duration `default:"30s" envconfig:"SHUTDOWN_GRACE_PERIOD"`
-	WriteTimeout        time.Duration `default:"10s" envconfig:"WRITE_TIMEOUT"`
 	ReadTimeout         time.Duration `default:"10s" envconfig:"READ_TIMEOUT"`
 	IdleTimeout         time.Duration `default:"30s" envconfig:"IDLE_TIMEOUT"`
+	WriteTimeout        time.Duration `default:"10s" envconfig:"WRITE_TIMEOUT"`
+	DBPort              int           `required:"true" envconfig:"DBPORT"`
 	LogHttpRequest      bool          `default:"false" envconfig:"LOG_HTTP_REQUEST"`
-	LogLevel            string        `default:"WARN" envconfig:"LOG_LEVEL"`
 }
 
 func (envVar Config) GetDBConnectionString() string {

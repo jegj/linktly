@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS linktly.accounts (
    email VARCHAR(255) UNIQUE NOT NULL,
    password VARCHAR(255),
    api_token VARCHAR(255) DEFAULT NULL,
-   role INT not null DEFAULT 2,
+   role INT NOT null DEFAULT 2,
+   refresh_token VARCHAR(255) DEFAULT NULL,
    created_at TIMESTAMP,
    updated_at TIMESTAMP DEFAULT NULL,
    CONSTRAINT email_check CHECK (

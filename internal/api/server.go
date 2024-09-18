@@ -15,10 +15,10 @@ import (
 )
 
 type Server struct {
-	config       config.Config
 	router       *chi.Mux
 	store        *store.PostgresStore
-	serverLogVar *slog.LevelVar // Slog var to allow change level on-the-fly
+	serverLogVar *slog.LevelVar
+	config       config.Config
 }
 
 func NewServer(cfg config.Config, ctx context.Context) *Server {

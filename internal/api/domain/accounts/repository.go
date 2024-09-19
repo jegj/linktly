@@ -2,13 +2,10 @@ package accounts
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
+	linktlyError "github.com/jegj/linktly/internal/api/error"
 	"github.com/jegj/linktly/internal/api/types"
 	"github.com/jegj/linktly/internal/store"
 	"golang.org/x/crypto/bcrypt"
@@ -40,17 +37,7 @@ func (repo *PostgresRepository) GetByID(ctx context.Context, id string) (*Accoun
 
 	err := repo.store.Source.QueryRow(ctx, query, id).Scan(&name, &lastname, &email, &role, &createdAt)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, types.APIError{
-				Msg:        fmt.Sprintf("Acount not found for id %v", id),
-				StatusCode: http.StatusNotFound,
-			}
-		} else {
-			return nil, types.APIError{
-				Msg:        err.Error(),
-				StatusCode: http.StatusInternalServerError,
-			}
-		}
+		return nil, linktlyError.PostgresFormatting(err)
 	}
 
 	account := Account{
@@ -81,24 +68,7 @@ func (repo *PostgresRepository) CreateAccount(ctx context.Context, account *Acco
 	query := `INSERT INTO linktly.accounts(name, lastname, email, password ) VALUES($1,$2,$3,$4) RETURNING id, created_at, role`
 	err = repo.store.Source.QueryRow(ctx, query, account.Name, account.LastName, account.Email, string(hashedPassword)).Scan(&id, &createdAt, &role)
 	if err != nil {
-		if pgErr, ok := err.(*pgconn.PgError); ok {
-			if pgErr.Code == "23505" {
-				return nil, types.APIError{
-					Msg:        err.Error(),
-					StatusCode: http.StatusConflict,
-				}
-			} else {
-				return nil, types.APIError{
-					Msg:        err.Error(),
-					StatusCode: http.StatusInternalServerError,
-				}
-			}
-		} else {
-			return nil, types.APIError{
-				Msg:        err.Error(),
-				StatusCode: http.StatusInternalServerError,
-			}
-		}
+		return nil, linktlyError.PostgresFormatting(err)
 	}
 
 	account.Id = id

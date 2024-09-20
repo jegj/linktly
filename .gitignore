@@ -8,6 +8,7 @@
 *.so
 *.dylib
 main
+configs/keys/dev
 internal/database/local/
 internal/database/dev_scripts/
 tmp

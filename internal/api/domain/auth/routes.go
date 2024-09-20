@@ -17,6 +17,7 @@ func LoadRoutes(ctx context.Context, r chi.Router, config config.Config, store *
 	}
 	authHandler := AuthHandler{
 		service: accountService,
+		config:  config,
 	}
 
 	r.Route("/api/v1/auth", func(r chi.Router) {

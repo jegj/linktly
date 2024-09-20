@@ -27,5 +27,6 @@ require (
 require (
 	github.com/go-chi/render v1.0.3
 	github.com/go-playground/validator/v10 v10.22.0
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/jackc/pgx/v5 v5.6.0
 )

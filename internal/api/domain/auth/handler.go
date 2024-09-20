@@ -9,10 +9,12 @@ import (
 	"github.com/jegj/linktly/internal/api/response"
 	"github.com/jegj/linktly/internal/api/types"
 	"github.com/jegj/linktly/internal/api/validations"
+	"github.com/jegj/linktly/internal/config"
 )
 
 type AuthHandler struct {
 	service AuthService
+	config  config.Config
 }
 
 func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) error {
@@ -44,15 +46,24 @@ func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) error {
 	if error != nil {
 		return error
 	} else {
-		// TODO: IMPROVE THIS
-		http.SetCookie(w, &http.Cookie{
-			Name:     "example_cookie",
-			Value:    "cookie_value",
-			Expires:  time.Now().Add(24 * time.Hour), // Set expiration time
-			Path:     "/",
-			HttpOnly: true,  // For security, HttpOnly cookies are not accessible via JavaScript
-			Secure:   false, // Set to true if using HTTPS
-		})
-		return nil
+		// TODO: DEFINE EXP TIME
+		expirationTime := time.Now().Add(5 * time.Minute)
+		jwt, error := CreateJwt(a.config, expirationTime)
+		if error != nil {
+			return types.APIError{
+				Msg:        error.Error(),
+				StatusCode: http.StatusInternalServerError,
+			}
+		} else {
+			http.SetCookie(w, &http.Cookie{
+				Name:     "example_cookie",
+				Value:    jwt,
+				Expires:  time.Now().Add(24 * time.Hour), // Set expiration time
+				Path:     "/",
+				HttpOnly: true,
+				Secure:   false, // Set to true if using HTTPS
+			})
+			return nil
+		}
 	}
 }

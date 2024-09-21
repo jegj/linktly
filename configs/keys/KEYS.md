@@ -21,10 +21,3 @@ openssl rsa -pubout -in private.pem -out public.pem
 openssl rsa -in private.pem -check
 openssl rsa -pubin -in public.pem -text -noout
 ```
-
-## Base64
-
-```sh
-base64 private.pem -w 0
-
-```

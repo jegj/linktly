@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -18,6 +19,8 @@ type AuthHandler struct {
 }
 
 func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) error {
+	fmt.Println("before service login---->")
+
 	data := &LoginReq{}
 	if err := render.Bind(r, data); err != nil {
 		return response.InvalidJsonRequest()
@@ -42,26 +45,29 @@ func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) error {
 		return response.InvalidRequestData(validationErrors)
 	}
 
-	_, error := a.service.Login(data.Email, data.Password)
+	account, error := a.service.Login(data.Email, data.Password)
 	if error != nil {
 		return error
 	} else {
-		// TODO: DEFINE EXP TIME
-		expirationTime := time.Now().Add(5 * time.Minute)
-		jwt, error := CreateJwt(a.config, expirationTime)
+		claims := GetClaimsFromAccount(*account)
+		expirationTime := time.Now().Add(a.config.AccessTokenExpTime)
+		// TODO: refactor createjwt func to get the privatekey
+		jwt, error := CreateJwt(a.config, expirationTime, claims)
 		if error != nil {
+			fmt.Println("======>")
 			return types.APIError{
 				Msg:        error.Error(),
 				StatusCode: http.StatusInternalServerError,
 			}
 		} else {
 			http.SetCookie(w, &http.Cookie{
-				Name:     "example_cookie",
+				Name:     LinktlyAuthCookieName,
 				Value:    jwt,
-				Expires:  time.Now().Add(24 * time.Hour), // Set expiration time
+				Expires:  expirationTime,
 				Path:     "/",
 				HttpOnly: true,
-				Secure:   false, // Set to true if using HTTPS
+				// TODO: replace for https envs
+				Secure: false, // Set to true if using HTTPS
 			})
 			return nil
 		}

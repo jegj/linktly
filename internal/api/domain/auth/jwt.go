@@ -1,12 +1,11 @@
 package auth
 
 import (
-	"fmt"
+	"crypto/rsa"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jegj/linktly/internal/api/domain/accounts"
-	"github.com/jegj/linktly/internal/config"
 )
 
 func GetClaimsFromAccount(account accounts.Account) JwtClaims {
@@ -17,14 +16,7 @@ func GetClaimsFromAccount(account accounts.Account) JwtClaims {
 	}
 }
 
-func CreateJwt(config config.Config, expirationTime time.Time, claims JwtClaims) (string, error) {
-	fmt.Println("-------------------")
-	privateKey, err := config.GetPrivateKey()
-	if err != nil {
-		fmt.Printf("-->%v", err)
-		return "", err
-	}
-
+func CreateJwt(privateKey *rsa.PrivateKey, expirationTime time.Time, claims JwtClaims) (string, error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodRS256,
 		jwt.MapClaims{
 			"iat":   time.Now(),
@@ -36,8 +28,6 @@ func CreateJwt(config config.Config, expirationTime time.Time, claims JwtClaims)
 
 	tokenString, err := t.SignedString(privateKey)
 	if err != nil {
-		fmt.Printf("token-->%v", err)
-
 		return "", err
 	}
 

@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -19,8 +18,6 @@ type AuthHandler struct {
 }
 
 func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) error {
-	fmt.Println("before service login---->")
-
 	data := &LoginReq{}
 	if err := render.Bind(r, data); err != nil {
 		return response.InvalidJsonRequest()
@@ -51,10 +48,17 @@ func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) error {
 	} else {
 		claims := GetClaimsFromAccount(*account)
 		expirationTime := time.Now().Add(a.config.AccessTokenExpTime)
-		// TODO: refactor createjwt func to get the privatekey
-		jwt, error := CreateJwt(a.config, expirationTime, claims)
+
+		privateKey, err := a.config.GetPrivateKey()
+		if err != nil {
+			return types.APIError{
+				Msg:        err.Error(),
+				StatusCode: http.StatusInternalServerError,
+			}
+		}
+
+		jwt, error := CreateJwt(privateKey, expirationTime, claims)
 		if error != nil {
-			fmt.Println("======>")
 			return types.APIError{
 				Msg:        error.Error(),
 				StatusCode: http.StatusInternalServerError,

@@ -2,7 +2,10 @@ package auth
 
 import "net/http"
 
-const LinktlyAuthCookieName = "auth_token"
+const (
+	LinktlyAccessTokenCookieName  = "access_token"
+	LinktlyRefreshTokenCookieName = "refresh_token"
+)
 
 type LoginReq struct {
 	Email    string `db:"email" validate:"required,email" json:"email"`

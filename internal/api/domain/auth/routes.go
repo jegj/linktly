@@ -14,6 +14,7 @@ func LoadRoutes(ctx context.Context, r chi.Router, config config.Config, store *
 	accountService := AuthService{
 		ctx:        ctx,
 		repository: accountRepository,
+		config:     config,
 	}
 	authHandler := AuthHandler{
 		service: accountService,

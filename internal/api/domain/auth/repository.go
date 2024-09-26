@@ -14,7 +14,7 @@ import (
 
 type authRepository interface {
 	Login(ctx context.Context, email string, password string) (*accounts.Account, error)
-	UpdateRefreshToken(ctx context.Context, refreshToken string, email string) error
+	UpdateRefreshToken(ctx context.Context, jti string, email string) error
 }
 
 type PostgresRepository struct {
@@ -62,18 +62,10 @@ func (repo *PostgresRepository) Login(ctx context.Context, email string, passwor
 	return &account, nil
 }
 
-func (repo *PostgresRepository) UpdateRefreshToken(ctx context.Context, refreshToken string, email string) error {
-	query := "UPDATE linktly.accounts SET refresh_token = $1 WHERE email = $2"
+func (repo *PostgresRepository) UpdateRefreshToken(ctx context.Context, jti string, email string) error {
+	query := "UPDATE linktly.accounts SET refresh_token_jti = $1 WHERE email = $2"
 
-	encryptedRefreshToken, err := bcrypt.GenerateFromPassword([]byte(refreshToken), 15)
-	if err != nil {
-		return types.APIError{
-			Msg:        err.Error(),
-			StatusCode: http.StatusInternalServerError,
-		}
-	}
-
-	_, err = repo.store.Source.Exec(ctx, query, encryptedRefreshToken, email)
+	_, err := repo.store.Source.Exec(ctx, query, jti, email)
 	if err != nil {
 		return linktlyError.PostgresFormatting(err)
 	}

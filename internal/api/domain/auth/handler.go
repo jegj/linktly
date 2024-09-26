@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/render"
@@ -58,11 +60,33 @@ func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) error {
 			Name:     LinktlyRefreshTokenCookieName,
 			Value:    refreshToken,
 			Expires:  refreshTokenExpirationTime,
-			Path:     "/",
+			Path:     "/api/v1/auth/refresh",
 			HttpOnly: true,
 			// TODO: replace for https envs
 			Secure: false, // Set to true if using HTTPS
 		})
 		return nil
 	}
+}
+
+func (a AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) error {
+	cookie, err := r.Cookie(LinktlyRefreshTokenCookieName)
+	if err != nil {
+		switch {
+		case errors.Is(err, http.ErrNoCookie):
+			return types.APIError{
+				Msg:        err.Error(),
+				StatusCode: http.StatusUnauthorized,
+			}
+		default:
+			return types.APIError{
+				Msg:        err.Error(),
+				StatusCode: http.StatusInternalServerError,
+			}
+		}
+	}
+
+	fmt.Printf("===>%v\n", cookie)
+
+	return nil
 }

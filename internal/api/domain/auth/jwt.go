@@ -16,15 +16,27 @@ func GetClaimsFromAccount(account accounts.Account) JwtClaims {
 	}
 }
 
-func CreateJwt(privateKey *rsa.PrivateKey, expirationTime time.Time, claims JwtClaims) (string, error) {
-	t := jwt.NewWithClaims(jwt.SigningMethodRS256,
-		jwt.MapClaims{
+func CreateJwt(privateKey *rsa.PrivateKey, expirationTime time.Time, claims JwtClaims, jti *string) (string, error) {
+	var jwtClaims jwt.MapClaims
+	if jti != nil {
+		jwtClaims = jwt.MapClaims{
 			"iat":   time.Now(),
 			"sub":   claims.Sub,
 			"email": claims.Email,
 			"role":  claims.Role,
 			"exp":   expirationTime,
-		})
+			"jti":   *jti,
+		}
+	} else {
+		jwtClaims = jwt.MapClaims{
+			"iat":   time.Now(),
+			"sub":   claims.Sub,
+			"email": claims.Email,
+			"role":  claims.Role,
+			"exp":   expirationTime,
+		}
+	}
+	t := jwt.NewWithClaims(jwt.SigningMethodRS256, jwtClaims)
 
 	tokenString, err := t.SignedString(privateKey)
 	if err != nil {

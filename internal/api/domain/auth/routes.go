@@ -23,5 +23,6 @@ func LoadRoutes(ctx context.Context, r chi.Router, config config.Config, store *
 
 	r.Route("/api/v1/auth", func(r chi.Router) {
 		r.Method("POST", "/login", handlers.CentralizedErrorHandler(authHandler.Login))
+		r.Method("POST", "/refresh", handlers.CentralizedErrorHandler(authHandler.RefreshToken))
 	})
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jegj/linktly/internal/api/types"
 	"github.com/jegj/linktly/internal/config"
 )
@@ -33,7 +34,7 @@ func (s *AuthService) Login(email string, password string) (string, time.Time, s
 		}
 	}
 
-	accessToken, error := CreateJwt(privateKey, accessTokenExpirationTime, claims)
+	accessToken, error := CreateJwt(privateKey, accessTokenExpirationTime, claims, nil)
 	if error != nil {
 		return "", time.Time{}, "", time.Time{}, types.APIError{
 			Msg:        error.Error(),
@@ -41,12 +42,24 @@ func (s *AuthService) Login(email string, password string) (string, time.Time, s
 		}
 	}
 
-	refreshToken, error := CreateJwt(privateKey, refreshTokenExpirationTime, claims)
+	jti, error := uuid.NewV7()
+	if error != nil {
+		return "", time.Time{}, "", time.Time{}, error
+	}
+
+	jtiRef := jti.String()
+
+	refreshToken, error := CreateJwt(privateKey, refreshTokenExpirationTime, claims, &jtiRef)
 	if error != nil {
 		return "", time.Time{}, "", time.Time{}, types.APIError{
 			Msg:        error.Error(),
 			StatusCode: http.StatusInternalServerError,
 		}
+	}
+
+	error = s.repository.UpdateRefreshToken(s.ctx, jtiRef, email)
+	if error != nil {
+		return "", time.Time{}, "", time.Time{}, error
 	}
 
 	return accessToken, accessTokenExpirationTime, refreshToken, refreshTokenExpirationTime, nil

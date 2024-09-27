@@ -15,6 +15,7 @@ import (
 type authRepository interface {
 	Login(ctx context.Context, email string, password string) (*accounts.Account, error)
 	UpdateRefreshToken(ctx context.Context, jti string, email string) error
+	UpdateRefreshTokenJtiBySubAndJti(ctx context.Context, userId string, jti string, newJti string) error
 }
 
 type PostgresRepository struct {
@@ -66,6 +67,17 @@ func (repo *PostgresRepository) UpdateRefreshToken(ctx context.Context, jti stri
 	query := "UPDATE linktly.accounts SET refresh_token_jti = $1 WHERE email = $2"
 
 	_, err := repo.store.Source.Exec(ctx, query, jti, email)
+	if err != nil {
+		return linktlyError.PostgresFormatting(err)
+	}
+
+	return nil
+}
+
+func (repo *PostgresRepository) UpdateRefreshTokenJtiBySubAndJti(ctx context.Context, userId string, jti string, newJti string) error {
+	query := "UPDATE linktly.accounts SET refresh_token_jti = $1 WHERE  id = $2 AND refresh_token_jti = $3"
+
+	_, err := repo.store.Source.Exec(ctx, query, newJti, userId, jti)
 	if err != nil {
 		return linktlyError.PostgresFormatting(err)
 	}

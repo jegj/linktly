@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/render"
@@ -86,7 +85,29 @@ func (a AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) error 
 		}
 	}
 
-	fmt.Printf("===>%v\n", cookie)
+	accessToken, acessTokenExpirationTime, refreshToken, refreshTokenExpirationTime, error := a.service.Refresh(cookie.Value)
 
-	return nil
+	if error != nil {
+		return error
+	} else {
+		http.SetCookie(w, &http.Cookie{
+			Name:     LinktlyAccessTokenCookieName,
+			Value:    accessToken,
+			Expires:  acessTokenExpirationTime,
+			Path:     "/",
+			HttpOnly: true,
+			// TODO: replace for https envs
+			Secure: false, // Set to true if using HTTPS
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:     LinktlyRefreshTokenCookieName,
+			Value:    refreshToken,
+			Expires:  refreshTokenExpirationTime,
+			Path:     "/api/v1/auth/refresh",
+			HttpOnly: true,
+			// TODO: replace for https envs
+			Secure: false, // Set to true if using HTTPS
+		})
+		return nil
+	}
 }

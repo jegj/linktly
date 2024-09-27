@@ -1,6 +1,10 @@
 package auth
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/golang-jwt/jwt/v5"
+)
 
 const (
 	LinktlyAccessTokenCookieName  = "access_token"
@@ -16,8 +20,13 @@ func (req *LoginReq) Bind(r *http.Request) error {
 	return nil
 }
 
-type JwtClaims struct {
+type JwtCustomClaims struct {
 	Email string
 	Sub   string
 	Role  int
+}
+
+type JwtClaims struct {
+	*JwtCustomClaims
+	jwt.RegisteredClaims
 }

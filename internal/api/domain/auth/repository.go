@@ -63,6 +63,7 @@ func (repo *PostgresRepository) Login(ctx context.Context, email string, passwor
 	return &account, nil
 }
 
+// FIXME:Could be UpdateRefreshTokenBySub
 func (repo *PostgresRepository) UpdateRefreshToken(ctx context.Context, jti string, email string) error {
 	query := "UPDATE linktly.accounts SET refresh_token_jti = $1 WHERE email = $2"
 
@@ -74,6 +75,7 @@ func (repo *PostgresRepository) UpdateRefreshToken(ctx context.Context, jti stri
 	return nil
 }
 
+// FIXME: COuld be UpdateRefreshTokenJtiByUserIdAndJti
 func (repo *PostgresRepository) UpdateRefreshTokenJtiBySubAndJti(ctx context.Context, userId string, jti string, newJti string) error {
 	query := "UPDATE linktly.accounts SET refresh_token_jti = $1 WHERE  id = $2 AND refresh_token_jti = $3"
 

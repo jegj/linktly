@@ -14,8 +14,8 @@ import (
 
 type authRepository interface {
 	Login(ctx context.Context, email string, password string) (*accounts.Account, error)
-	UpdateRefreshToken(ctx context.Context, jti string, email string) error
-	UpdateRefreshTokenJtiBySubAndJti(ctx context.Context, userId string, jti string, newJti string) error
+	UpdateRefreshTokenJtiByUserId(ctx context.Context, jti string, accountId string) error
+	UpdateRefreshTokenJtiByUserIdAndJti(ctx context.Context, accountId string, jti string, newJti string) error
 }
 
 type PostgresRepository struct {
@@ -63,11 +63,10 @@ func (repo *PostgresRepository) Login(ctx context.Context, email string, passwor
 	return &account, nil
 }
 
-// FIXME:Could be UpdateRefreshTokenBySub
-func (repo *PostgresRepository) UpdateRefreshToken(ctx context.Context, jti string, email string) error {
-	query := "UPDATE linktly.accounts SET refresh_token_jti = $1 WHERE email = $2"
+func (repo *PostgresRepository) UpdateRefreshTokenJtiByUserId(ctx context.Context, jti string, accountId string) error {
+	query := "UPDATE linktly.accounts SET refresh_token_jti = $1 WHERE id = $2"
 
-	_, err := repo.store.Source.Exec(ctx, query, jti, email)
+	_, err := repo.store.Source.Exec(ctx, query, jti, accountId)
 	if err != nil {
 		return linktlyError.PostgresFormatting(err)
 	}
@@ -75,11 +74,10 @@ func (repo *PostgresRepository) UpdateRefreshToken(ctx context.Context, jti stri
 	return nil
 }
 
-// FIXME: COuld be UpdateRefreshTokenJtiByUserIdAndJti
-func (repo *PostgresRepository) UpdateRefreshTokenJtiBySubAndJti(ctx context.Context, userId string, jti string, newJti string) error {
-	query := "UPDATE linktly.accounts SET refresh_token_jti = $1 WHERE  id = $2 AND refresh_token_jti = $3"
+func (repo *PostgresRepository) UpdateRefreshTokenJtiByUserIdAndJti(ctx context.Context, accountId string, jti string, newJti string) error {
+	query := "UPDATE linktly.accounts SET refresh_token_jti = $1 WHERE id = $2 AND refresh_token_jti = $3"
 
-	_, err := repo.store.Source.Exec(ctx, query, newJti, userId, jti)
+	_, err := repo.store.Source.Exec(ctx, query, newJti, accountId, jti)
 	if err != nil {
 		return linktlyError.PostgresFormatting(err)
 	}

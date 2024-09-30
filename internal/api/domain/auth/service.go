@@ -57,7 +57,7 @@ func (s *AuthService) Login(email string, password string) (string, time.Time, s
 		}
 	}
 
-	error = s.repository.UpdateRefreshToken(s.ctx, jtiRef, email)
+	error = s.repository.UpdateRefreshTokenJtiByUserId(s.ctx, jtiRef, account.Id)
 	if error != nil {
 		return "", time.Time{}, "", time.Time{}, error
 	}
@@ -82,7 +82,7 @@ func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, t
 		}
 	}
 
-	claims, err := VerifyJwt(refreshToken, publicKey)
+	refreshTokenClaims, err := VerifyJwt(refreshToken, publicKey)
 	if err != nil {
 		return "", time.Time{}, "", time.Time{}, types.APIError{
 			Msg:        err.Error(),
@@ -90,11 +90,10 @@ func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, t
 		}
 	}
 
-	// FIXME: Improve this part of code realted to sub claim
-	cookieJti := claims.ID
-	cookieUserId := claims.Subject
+	cookieJti := refreshTokenClaims.ID
+	cookieUserId := refreshTokenClaims.Subject
 
-	customClaims := GetClaimsFromJwtClaims(claims)
+	customClaims := GetClaimsFromJwtClaims(refreshTokenClaims)
 
 	accessTokenExpirationTime := time.Now().Add(s.config.AccessTokenExpTime)
 	refreshTokenExpirationTime := time.Now().Add(s.config.RefreshTokenExpTime)
@@ -122,7 +121,7 @@ func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, t
 		}
 	}
 
-	err = s.repository.UpdateRefreshTokenJtiBySubAndJti(s.ctx, cookieUserId, cookieJti, newJtiRef)
+	err = s.repository.UpdateRefreshTokenJtiByUserIdAndJti(s.ctx, cookieUserId, cookieJti, newJtiRef)
 	if err != nil {
 		return "", time.Time{}, "", time.Time{}, err
 	}

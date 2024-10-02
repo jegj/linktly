@@ -77,9 +77,16 @@ func (repo *PostgresRepository) UpdateRefreshTokenJtiByUserId(ctx context.Contex
 func (repo *PostgresRepository) UpdateRefreshTokenJtiByUserIdAndJti(ctx context.Context, accountId string, jti string, newJti string) error {
 	query := "UPDATE linktly.accounts SET refresh_token_jti = $1 WHERE id = $2 AND refresh_token_jti = $3"
 
-	_, err := repo.store.Source.Exec(ctx, query, newJti, accountId, jti)
+	cmdTag, err := repo.store.Source.Exec(ctx, query, newJti, accountId, jti)
 	if err != nil {
 		return linktlyError.PostgresFormatting(err)
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return types.APIError{
+			Msg:        "Refresh token does not match",
+			StatusCode: http.StatusUnauthorized,
+		}
 	}
 
 	return nil

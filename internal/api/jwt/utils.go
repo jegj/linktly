@@ -1,4 +1,4 @@
-package auth
+package jwt
 
 import (
 	"crypto/rsa"
@@ -6,18 +6,17 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/jegj/linktly/internal/api/domain/accounts"
 )
 
-func GetClaimsFromAccount(account accounts.Account) JwtCustomClaims {
+func GetClaimsFromAccountData(accounId string, accountEmail string, accountRole int) JwtCustomClaims {
 	return JwtCustomClaims{
-		Sub:   account.Id,
-		Email: account.Email,
-		Role:  account.Role,
+		Sub:   accounId,
+		Email: accountEmail,
+		Role:  accountRole,
 	}
 }
 
-func GetClaimsFromJwtClaims(claims *JwtClaims) JwtCustomClaims {
+func GetClaimsFromJwtClaims(claims JwtClaims) JwtCustomClaims {
 	return JwtCustomClaims{
 		Sub:   claims.Sub,
 		Email: claims.Email,
@@ -55,6 +54,7 @@ func CreateJwt(privateKey *rsa.PrivateKey, expirationTime time.Time, claims JwtC
 	return tokenString, nil
 }
 
+// TODO: MOVE OR DUPLICATE ON THE MIDDLEWARE
 func VerifyJwt(tokenString string, publicKey *rsa.PublicKey) (*JwtClaims, error) {
 	claims := &JwtClaims{}
 	// Parse the token with the secret key

@@ -2,8 +2,6 @@ package auth
 
 import (
 	"net/http"
-
-	"github.com/golang-jwt/jwt/v5"
 )
 
 const (
@@ -18,15 +16,4 @@ type LoginReq struct {
 
 func (req *LoginReq) Bind(r *http.Request) error {
 	return nil
-}
-
-type JwtCustomClaims struct {
-	Email string
-	Sub   string
-	Role  int
-}
-
-type JwtClaims struct {
-	*JwtCustomClaims
-	jwt.RegisteredClaims
 }

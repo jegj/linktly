@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jegj/linktly/internal/api/jwt"
 	"github.com/jegj/linktly/internal/api/types"
 	"github.com/jegj/linktly/internal/config"
 )
@@ -22,7 +23,7 @@ func (s *AuthService) Login(email string, password string) (string, time.Time, s
 		return "", time.Time{}, "", time.Time{}, err
 	}
 
-	claims := GetClaimsFromAccount(*account)
+	claims := jwt.GetClaimsFromAccountData(account.Id, account.Email, account.Role)
 	accessTokenExpirationTime := time.Now().Add(s.config.AccessTokenExpTime)
 	refreshTokenExpirationTime := time.Now().Add(s.config.RefreshTokenExpTime)
 
@@ -34,7 +35,7 @@ func (s *AuthService) Login(email string, password string) (string, time.Time, s
 		}
 	}
 
-	accessToken, error := CreateJwt(privateKey, accessTokenExpirationTime, claims, nil)
+	accessToken, error := jwt.CreateJwt(privateKey, accessTokenExpirationTime, claims, nil)
 	if error != nil {
 		return "", time.Time{}, "", time.Time{}, types.APIError{
 			Msg:        error.Error(),
@@ -49,7 +50,7 @@ func (s *AuthService) Login(email string, password string) (string, time.Time, s
 
 	jtiRef := jti.String()
 
-	refreshToken, error := CreateJwt(privateKey, refreshTokenExpirationTime, claims, &jtiRef)
+	refreshToken, error := jwt.CreateJwt(privateKey, refreshTokenExpirationTime, claims, &jtiRef)
 	if error != nil {
 		return "", time.Time{}, "", time.Time{}, types.APIError{
 			Msg:        error.Error(),
@@ -83,7 +84,7 @@ func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, t
 		}
 	}
 
-	refreshTokenClaims, err := VerifyJwt(refreshToken, publicKey)
+	refreshTokenClaims, err := jwt.VerifyJwt(refreshToken, publicKey)
 	if err != nil {
 		return "", time.Time{}, "", time.Time{}, types.APIError{
 			Msg:        err.Error(),
@@ -94,12 +95,12 @@ func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, t
 	cookieJti := refreshTokenClaims.ID
 	cookieUserId := refreshTokenClaims.Subject
 
-	customClaims := GetClaimsFromJwtClaims(refreshTokenClaims)
+	customClaims := jwt.GetClaimsFromJwtClaims(*refreshTokenClaims)
 
 	accessTokenExpirationTime := time.Now().Add(s.config.AccessTokenExpTime)
 	refreshTokenExpirationTime := time.Now().Add(s.config.RefreshTokenExpTime)
 
-	accessToken, err := CreateJwt(privateKey, accessTokenExpirationTime, customClaims, nil)
+	accessToken, err := jwt.CreateJwt(privateKey, accessTokenExpirationTime, customClaims, nil)
 	if err != nil {
 		return "", time.Time{}, "", time.Time{}, types.APIError{
 			Msg:        err.Error(),
@@ -114,7 +115,7 @@ func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, t
 
 	newJtiRef := jti.String()
 
-	refreshToken, err = CreateJwt(privateKey, refreshTokenExpirationTime, customClaims, &newJtiRef)
+	refreshToken, err = jwt.CreateJwt(privateKey, refreshTokenExpirationTime, customClaims, &newJtiRef)
 	if err != nil {
 		return "", time.Time{}, "", time.Time{}, types.APIError{
 			Msg:        err.Error(),

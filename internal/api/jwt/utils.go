@@ -54,7 +54,6 @@ func CreateJwt(privateKey *rsa.PrivateKey, expirationTime time.Time, claims JwtC
 	return tokenString, nil
 }
 
-// TODO: MOVE OR DUPLICATE ON THE MIDDLEWARE
 func VerifyJwt(tokenString string, publicKey *rsa.PublicKey) (*JwtClaims, error) {
 	claims := &JwtClaims{}
 	// Parse the token with the secret key

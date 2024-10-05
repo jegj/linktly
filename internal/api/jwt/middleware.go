@@ -18,14 +18,13 @@ const (
 	UserRolesContextKey contextKey = "userRole"
 )
 
-// TODO: Do something with ctx
 func AuthMiddleware(publicKey rsa.PublicKey) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			accessTokenCookie, err := r.Cookie("access_token")
 			if err != nil {
 				jsonResp := types.APIError{
-					Msg:        "Can't access to the cookie",
+					Msg:        err.Error(),
 					StatusCode: http.StatusUnauthorized,
 				}
 				w.Header().Set("Content-Type", "application/json")

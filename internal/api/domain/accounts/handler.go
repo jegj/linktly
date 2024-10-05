@@ -1,13 +1,11 @@
 package accounts
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
-	"github.com/jegj/linktly/internal/api/jwt"
 	"github.com/jegj/linktly/internal/api/response"
 	"github.com/jegj/linktly/internal/api/types"
 	"github.com/jegj/linktly/internal/api/validations"
@@ -19,9 +17,6 @@ type AccountHandler struct {
 
 func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Request) error {
 	id := chi.URLParam(r, "id")
-	fmt.Printf("id===========>%v\n", r.Context().Value(jwt.UserIdContextKey))
-	fmt.Printf("email===========>%v\n", r.Context().Value(jwt.UserEmailContextKey))
-	fmt.Printf("role===========>%v\n", r.Context().Value(jwt.UserRolesContextKey))
 	req := GetAccountByIdHandlerReq{
 		Id: id,
 	}

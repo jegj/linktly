@@ -18,7 +18,7 @@ func GetClaimsFromAccountData(accounId string, accountEmail string, accountRole 
 
 func GetClaimsFromJwtClaims(claims JwtClaims) JwtCustomClaims {
 	return JwtCustomClaims{
-		Sub:   claims.Sub,
+		Sub:   claims.Subject,
 		Email: claims.Email,
 		Role:  claims.Role,
 	}

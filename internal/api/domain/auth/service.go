@@ -66,7 +66,6 @@ func (s *AuthService) Login(email string, password string) (string, time.Time, s
 	return accessToken, accessTokenExpirationTime, refreshToken, refreshTokenExpirationTime, nil
 }
 
-// FIXME: sub claim is comming empty after calling this endpoint
 func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, time.Time, error) {
 	publicKey, err := s.config.GetPublicKey()
 	if err != nil {

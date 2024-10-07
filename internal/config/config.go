@@ -26,9 +26,10 @@ type Config struct {
 	DBPort              int           `required:"true" envconfig:"DBPORT"`
 	IdleTimeout         time.Duration `default:"30s" envconfig:"IDLE_TIMEOUT"`
 	ReadTimeout         time.Duration `default:"10s" envconfig:"READ_TIMEOUT"`
-	LogHttpRequest      bool          `default:"false" envconfig:"LOG_HTTP_REQUEST"`
 	AccessTokenExpTime  time.Duration `default:"1h" required:"true" envconfig:"ACCESS_TOKEN_EXP_TIME"`
 	RefreshTokenExpTime time.Duration `default:"120h" required:"true" envconfig:"REFRESH_TOKEN_EXP_TIME"`
+	LogHttpRequest      bool          `default:"false" envconfig:"LOG_HTTP_REQUEST"`
+	HTTPCookieSecure    bool          `default:"true" envconfig:"HTTP_COOKIE_SECURE"`
 }
 
 func (envVar Config) GetDBConnectionString() string {

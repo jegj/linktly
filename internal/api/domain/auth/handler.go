@@ -52,8 +52,8 @@ func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) error {
 			Expires:  acessTokenExpirationTime,
 			Path:     "/",
 			HttpOnly: true,
-			// TODO: replace for https envs
-			Secure: false, // Set to true if using HTTPS
+			Secure:   a.config.HTTPCookieSecure,
+			SameSite: http.SameSiteStrictMode,
 		})
 		http.SetCookie(w, &http.Cookie{
 			Name:     LinktlyRefreshTokenCookieName,
@@ -61,8 +61,8 @@ func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) error {
 			Expires:  refreshTokenExpirationTime,
 			Path:     "/api/v1/auth/refresh",
 			HttpOnly: true,
-			// TODO: replace for https envs
-			Secure: false, // Set to true if using HTTPS
+			Secure:   a.config.HTTPCookieSecure,
+			SameSite: http.SameSiteStrictMode,
 		})
 		return nil
 	}
@@ -96,8 +96,8 @@ func (a AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) error 
 			Expires:  acessTokenExpirationTime,
 			Path:     "/",
 			HttpOnly: true,
-			// TODO: replace for https envs
-			Secure: false, // Set to true if using HTTPS
+			Secure:   a.config.HTTPCookieSecure,
+			SameSite: http.SameSiteStrictMode,
 		})
 		http.SetCookie(w, &http.Cookie{
 			Name:     LinktlyRefreshTokenCookieName,
@@ -105,8 +105,8 @@ func (a AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) error 
 			Expires:  refreshTokenExpirationTime,
 			Path:     "/api/v1/auth/refresh",
 			HttpOnly: true,
-			// TODO: replace for https envs
-			Secure: false, // Set to true if using HTTPS
+			Secure:   a.config.HTTPCookieSecure,
+			SameSite: http.SameSiteStrictMode,
 		})
 		return nil
 	}

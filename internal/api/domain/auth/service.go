@@ -11,6 +11,7 @@ import (
 	"github.com/jegj/linktly/internal/config"
 )
 
+// TODO: context should be the one defined by the router
 type AuthService struct {
 	ctx        context.Context
 	repository authRepository
@@ -128,4 +129,13 @@ func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, t
 	}
 
 	return accessToken, accessTokenExpirationTime, refreshToken, refreshTokenExpirationTime, nil
+}
+
+func (s *AuthService) Logout(userId string) error {
+	err := s.repository.UpdateRefreshTokenJtiByUserId(s.ctx, "", userId)
+	if err != nil {
+		return err
+	} else {
+		return nil
+	}
 }

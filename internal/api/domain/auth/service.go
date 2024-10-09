@@ -19,6 +19,7 @@ type AuthService struct {
 }
 
 func (s *AuthService) Login(email string, password string) (string, time.Time, string, time.Time, error) {
+	// TODO: Pass request context instead
 	account, err := s.repository.Login(s.ctx, email, password)
 	if err != nil {
 		return "", time.Time{}, "", time.Time{}, err
@@ -59,6 +60,7 @@ func (s *AuthService) Login(email string, password string) (string, time.Time, s
 		}
 	}
 
+	// TODO: Pass request context instead
 	error = s.repository.UpdateRefreshTokenJtiByUserId(s.ctx, jtiRef, account.Id)
 	if error != nil {
 		return "", time.Time{}, "", time.Time{}, error
@@ -123,6 +125,7 @@ func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, t
 		}
 	}
 
+	// TODO: Pass request context instead
 	err = s.repository.UpdateRefreshTokenJtiByUserIdAndJti(s.ctx, cookieUserId, cookieJti, newJtiRef)
 	if err != nil {
 		return "", time.Time{}, "", time.Time{}, err
@@ -132,6 +135,7 @@ func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, t
 }
 
 func (s *AuthService) Logout(userId string) error {
+	// TODO: Pass request context instead
 	err := s.repository.UpdateRefreshTokenJtiByUserId(s.ctx, "", userId)
 	if err != nil {
 		return err

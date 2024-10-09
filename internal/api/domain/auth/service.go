@@ -134,9 +134,8 @@ func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, t
 	return accessToken, accessTokenExpirationTime, refreshToken, refreshTokenExpirationTime, nil
 }
 
-func (s *AuthService) Logout(userId string) error {
-	// TODO: Pass request context instead
-	err := s.repository.UpdateRefreshTokenJtiByUserId(s.ctx, "", userId)
+func (s *AuthService) Logout(ctx context.Context, userId string) error {
+	err := s.repository.UpdateRefreshTokenJtiByUserId(ctx, "", userId)
 	if err != nil {
 		return err
 	} else {

@@ -66,9 +66,16 @@ func (repo *PostgresRepository) Login(ctx context.Context, email string, passwor
 func (repo *PostgresRepository) UpdateRefreshTokenJtiByUserId(ctx context.Context, jti string, accountId string) error {
 	query := "UPDATE linktly.accounts SET refresh_token_jti = $1 WHERE id = $2"
 
-	_, err := repo.store.Source.Exec(ctx, query, jti, accountId)
+	cmdTag, err := repo.store.Source.Exec(ctx, query, jti, accountId)
 	if err != nil {
 		return linktlyError.PostgresFormatting(err)
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return types.APIError{
+			Msg:        "User not found",
+			StatusCode: http.StatusNotFound,
+		}
 	}
 
 	return nil

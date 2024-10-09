@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
+	"github.com/jegj/linktly/internal/api/jwt"
 	"github.com/jegj/linktly/internal/api/response"
 	"github.com/jegj/linktly/internal/api/types"
 	"github.com/jegj/linktly/internal/api/validations"
@@ -115,24 +116,30 @@ func (a AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (a AuthHandler) Logout(w http.ResponseWriter, r *http.Request) error {
-	http.SetCookie(w, &http.Cookie{
-		Name:     LinktlyAccessTokenCookieName,
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   a.config.HTTPCookieSecure,
-		SameSite: http.SameSiteStrictMode,
-	})
-	http.SetCookie(w, &http.Cookie{
-		Name:     LinktlyRefreshTokenCookieName,
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		Path:     "/api/v1/auth/refresh",
-		HttpOnly: true,
-		Secure:   a.config.HTTPCookieSecure,
-		SameSite: http.SameSiteStrictMode,
-	})
-
-	return nil
+	context := r.Context()
+	userId := context.Value(jwt.UserIdContextKey).(string)
+	err := a.service.Logout(context, userId)
+	if err != nil {
+		return err
+	} else {
+		http.SetCookie(w, &http.Cookie{
+			Name:     LinktlyAccessTokenCookieName,
+			Value:    "",
+			Expires:  time.Now().Add(-time.Hour),
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   a.config.HTTPCookieSecure,
+			SameSite: http.SameSiteStrictMode,
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:     LinktlyRefreshTokenCookieName,
+			Value:    "",
+			Expires:  time.Now().Add(-time.Hour),
+			Path:     "/api/v1/auth/refresh",
+			HttpOnly: true,
+			Secure:   a.config.HTTPCookieSecure,
+			SameSite: http.SameSiteStrictMode,
+		})
+		return nil
+	}
 }

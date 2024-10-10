@@ -14,7 +14,6 @@ import (
 func LoadRoutes(ctx context.Context, r chi.Router, config config.Config, store *store.PostgresStore) {
 	accountRepository := GetNewAuthRepository(store)
 	accountService := AuthService{
-		ctx:        ctx,
 		repository: accountRepository,
 		config:     config,
 	}

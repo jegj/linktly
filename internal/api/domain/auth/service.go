@@ -11,16 +11,13 @@ import (
 	"github.com/jegj/linktly/internal/config"
 )
 
-// TODO: context should be the one defined by the router
 type AuthService struct {
-	ctx        context.Context
 	repository authRepository
 	config     config.Config
 }
 
-func (s *AuthService) Login(email string, password string) (string, time.Time, string, time.Time, error) {
-	// TODO: Pass request context instead
-	account, err := s.repository.Login(s.ctx, email, password)
+func (s *AuthService) Login(ctx context.Context, email string, password string) (string, time.Time, string, time.Time, error) {
+	account, err := s.repository.Login(ctx, email, password)
 	if err != nil {
 		return "", time.Time{}, "", time.Time{}, err
 	}
@@ -60,8 +57,7 @@ func (s *AuthService) Login(email string, password string) (string, time.Time, s
 		}
 	}
 
-	// TODO: Pass request context instead
-	error = s.repository.UpdateRefreshTokenJtiByUserId(s.ctx, jtiRef, account.Id)
+	error = s.repository.UpdateRefreshTokenJtiByUserId(ctx, jtiRef, account.Id)
 	if error != nil {
 		return "", time.Time{}, "", time.Time{}, error
 	}
@@ -69,7 +65,7 @@ func (s *AuthService) Login(email string, password string) (string, time.Time, s
 	return accessToken, accessTokenExpirationTime, refreshToken, refreshTokenExpirationTime, nil
 }
 
-func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, time.Time, error) {
+func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (string, time.Time, string, time.Time, error) {
 	publicKey, err := s.config.GetPublicKey()
 	if err != nil {
 		return "", time.Time{}, "", time.Time{}, types.APIError{
@@ -125,8 +121,7 @@ func (s *AuthService) Refresh(refreshToken string) (string, time.Time, string, t
 		}
 	}
 
-	// TODO: Pass request context instead
-	err = s.repository.UpdateRefreshTokenJtiByUserIdAndJti(s.ctx, cookieUserId, cookieJti, newJtiRef)
+	err = s.repository.UpdateRefreshTokenJtiByUserIdAndJti(ctx, cookieUserId, cookieJti, newJtiRef)
 	if err != nil {
 		return "", time.Time{}, "", time.Time{}, err
 	}

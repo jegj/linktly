@@ -29,7 +29,7 @@ func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Req
 		return response.InvalidRequestData(validationErrors)
 	}
 
-	account, err := s.service.GetAccountById(id)
+	account, err := s.service.GetAccountById(r.Context(), id)
 	if err != nil {
 		return err
 	} else {
@@ -71,7 +71,7 @@ func (s AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) er
 		Email:    data.Email,
 	}
 
-	account, err := s.service.CreateAccount(account)
+	account, err := s.service.CreateAccount(r.Context(), account)
 	if err != nil {
 		return err
 	} else {

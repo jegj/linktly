@@ -44,8 +44,7 @@ func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) error {
 		return response.InvalidRequestData(validationErrors)
 	}
 
-	// TODO: Pass request context here
-	accessToken, acessTokenExpirationTime, refreshToken, refreshTokenExpirationTime, error := a.service.Login(data.Email, data.Password)
+	accessToken, acessTokenExpirationTime, refreshToken, refreshTokenExpirationTime, error := a.service.Login(r.Context(), data.Email, data.Password)
 	if error != nil {
 		return error
 	} else {
@@ -88,7 +87,7 @@ func (a AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	accessToken, acessTokenExpirationTime, refreshToken, refreshTokenExpirationTime, error := a.service.Refresh(cookie.Value)
+	accessToken, acessTokenExpirationTime, refreshToken, refreshTokenExpirationTime, error := a.service.Refresh(r.Context(), cookie.Value)
 
 	if error != nil {
 		return error

@@ -8,3 +8,5 @@ vet:
 	go vet cmd/main.go
 vet_shadow:
 	go vet -vettool=$(which shadow) cmd/main.go
+build:
+	go build -ldflags="-X 'main.Version=v1.0.0'"

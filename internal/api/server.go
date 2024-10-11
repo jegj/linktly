@@ -18,10 +18,11 @@ type Server struct {
 	router       *chi.Mux
 	store        *store.PostgresStore
 	serverLogVar *slog.LevelVar
+	version      string
 	config       config.Config
 }
 
-func NewServer(cfg config.Config, ctx context.Context) *Server {
+func NewServer(cfg config.Config, ctx context.Context, version string) *Server {
 	store, err := store.NewPostgresStore(ctx, cfg.GetDBConnectionString())
 	if err != nil {
 		slog.Error(err.Error())
@@ -32,8 +33,9 @@ func NewServer(cfg config.Config, ctx context.Context) *Server {
 		config:       cfg,
 		serverLogVar: SetUpLogger(cfg),
 		store:        store,
+		version:      version,
 	}
-	server.routes(ctx)
+	server.routes()
 	return server
 }
 

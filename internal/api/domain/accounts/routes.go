@@ -1,7 +1,6 @@
 package accounts
 
 import (
-	"context"
 	"log/slog"
 
 	"github.com/go-chi/chi/v5"
@@ -11,7 +10,7 @@ import (
 	"github.com/jegj/linktly/internal/store"
 )
 
-func LoadRoutes(ctx context.Context, r chi.Router, config config.Config, store *store.PostgresStore) {
+func LoadRoutes(r chi.Router, config config.Config, store *store.PostgresStore) {
 	accountRepository := GetNewAccountRepository(store)
 	accountService := AccountService{
 		repository: accountRepository,

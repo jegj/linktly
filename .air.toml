@@ -13,5 +13,14 @@ exclude_dir = ["vendor"]
 # Command to run after build
 run_after_build = "chmod +x main"
 
+exclude_unchanged = true
+
+[color]
+# Customize each part's color. If no color found, use the raw app log.
+main = "magenta"
+watcher = "cyan"
+build = "yellow"
+runner = "green"
+
 [log]
 level = "debug"

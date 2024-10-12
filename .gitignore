@@ -12,6 +12,7 @@ configs/keys/dev
 internal/database/local/
 internal/database/dev_scripts/
 tmp
+vendor
 
 # Test binary, built with `go test -c`
 *.test

@@ -15,3 +15,4 @@ A demo project for learning go with a real case application
 - [Go Backend Clean Architecture](https://github.com/amitshekhariitbhu/go-backend-clean-architecture/blob/main/cmd/main.go)
 - [Tweet Automated Bot](https://github.com/forgeutah/tweet_automated_bot/blob/main/main.go)
 - [Working with pgx](https://donchev.is/post/working-with-postgresql-in-go-using-pgx/)
+- [Go8](https://github.com/gmhafiz/go8)

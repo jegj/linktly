@@ -2,8 +2,10 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jegj/linktly/internal/test"
 	"github.com/stretchr/testify/require"
 )
@@ -12,26 +14,35 @@ func TestAuthRepository(t *testing.T) {
 	ctx := context.Background()
 
 	pgContainer, err := test.CreatePostgresContainer(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 
 	t.Cleanup(func() {
-		if err := pgContainer.Terminate(ctx); err != nil {
-			t.Fatalf("failed to terminate pgContainer: %s", err)
-		}
+		err := pgContainer.Terminate(ctx)
+		require.NoError(t, err)
 	})
 
-	conn := pgContainer.Conn
-	defer conn.Close(context.Background())
+	connextionString := pgContainer.ConnectionString
 
-	var test bool
-	err = conn.QueryRow(
-		context.Background(),
-		"SELECT 1=1",
-	).Scan(&test)
-	require.NoError(t, err)
-	if !test {
-		t.Errorf("not true")
-	}
+	t.Run("test", func(t *testing.T) {
+		t.Cleanup(func() {
+			err = pgContainer.Restore(ctx)
+			require.NoError(t, err)
+		})
+
+		conn, err := pgx.Connect(ctx, connextionString)
+		require.NoError(t, err)
+
+		defer conn.Close(ctx)
+
+		var test bool
+		err = conn.QueryRow(
+			context.Background(),
+			"SELECT 1=1",
+		).Scan(&test)
+		require.NoError(t, err)
+		fmt.Printf("===========>%v\n", test)
+		if !test {
+			t.Errorf("not true")
+		}
+	})
 }

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/jackc/pgx/v5"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
@@ -13,7 +13,7 @@ import (
 
 type PostgresContainer struct {
 	*postgres.PostgresContainer
-	*pgx.Conn
+	ConnectionString string
 }
 
 func CreatePostgresContainer(ctx context.Context) (*PostgresContainer, error) {
@@ -30,18 +30,19 @@ func CreatePostgresContainer(ctx context.Context) (*PostgresContainer, error) {
 	if err != nil {
 		return nil, err
 	}
-	dbURL, err := pgContainer.ConnectionString(ctx)
+
+	err = pgContainer.Snapshot(ctx, postgres.WithSnapshotName("linktly_test_snapshot"))
 	if err != nil {
 		return nil, err
 	}
 
-	conn, err := pgx.Connect(context.Background(), dbURL)
+	connectionString, err := pgContainer.ConnectionString(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	return &PostgresContainer{
 		PostgresContainer: pgContainer,
-		Conn:              conn,
+		ConnectionString:  connectionString,
 	}, nil
 }

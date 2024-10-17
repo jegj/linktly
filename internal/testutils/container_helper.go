@@ -1,8 +1,7 @@
-package test
+package testutils
 
 import (
 	"context"
-	"path/filepath"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -16,17 +15,21 @@ type PostgresContainer struct {
 	ConnectionString string
 }
 
-func CreatePostgresContainer(ctx context.Context) (*PostgresContainer, error) {
-	pgContainer, err := postgres.Run(ctx, "jegj/postgres_16_uuidv7",
-		postgres.WithInitScripts(filepath.Join("..", "..", "..", "database", "testdata", "up.sql")),
-		postgres.WithDatabase("linktly_test"),
-		postgres.WithUsername("linktly_admin"),
+func CreatePostgresContainer(ctx context.Context, initialScripts string) (*PostgresContainer, error) {
+	dbname := "linktly_test"
+	dbuser := "linktly_admin"
+	options := []testcontainers.ContainerCustomizer{
+		postgres.WithDatabase(dbname),
+		postgres.WithUsername(dbuser),
 		postgres.WithPassword("linktly_pw"),
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").
-				WithOccurrence(2).WithStartupTimeout(5*time.Second)),
+				WithOccurrence(2).WithStartupTimeout(5 * time.Second)),
 		postgres.WithSQLDriver("pgx"),
-	)
+		postgres.WithInitScripts(initialScripts),
+	}
+
+	pgContainer, err := postgres.Run(ctx, "jegj/postgres_16_uuidv7", options...)
 	if err != nil {
 		return nil, err
 	}

@@ -3,17 +3,21 @@ package auth
 import (
 	"context"
 	"fmt"
+	"path"
 	"testing"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jegj/linktly/internal/test"
+	"github.com/jegj/linktly/internal/testutils"
 	"github.com/stretchr/testify/require"
 )
 
 func TestAuthRepository(t *testing.T) {
 	ctx := context.Background()
 
-	pgContainer, err := test.CreatePostgresContainer(ctx)
+	pgContainer, err := testutils.CreatePostgresContainer(
+		ctx,
+		path.Join("../../../database/testdb/up.sql"),
+	)
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
@@ -34,14 +38,14 @@ func TestAuthRepository(t *testing.T) {
 
 		defer conn.Close(ctx)
 
-		var test bool
+		var id string
 		err = conn.QueryRow(
-			context.Background(),
-			"SELECT 1=1",
-		).Scan(&test)
+			ctx,
+			"SELECT id from linktly.accounts WHERE email = 'jegj57@gmail.com'",
+		).Scan(&id)
 		require.NoError(t, err)
-		fmt.Printf("===========>%v\n", test)
-		if !test {
+		fmt.Printf("===========>%v\n", id)
+		if len(id) < 1 {
 			t.Errorf("not true")
 		}
 	})

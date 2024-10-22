@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
+	linktlyError "github.com/jegj/linktly/internal/api/error"
 	"github.com/jegj/linktly/internal/api/jwt"
 	"github.com/jegj/linktly/internal/api/response"
 	"github.com/jegj/linktly/internal/api/types"
@@ -35,12 +36,7 @@ func (a AuthHandler) Login(w http.ResponseWriter, r *http.Request) error {
 
 	errs := validate.Struct(data)
 	if errs != nil {
-		validationErrors := make(map[string]string)
-		// Cast the error to a ValidationErrors type
-		for _, err := range errs.(validator.ValidationErrors) {
-			// Extract the field name and error message
-			validationErrors[err.Field()] = err.Error()
-		}
+		validationErrors := linktlyError.ValidatorFormatting(errs.(validator.ValidationErrors))
 		return response.InvalidRequestData(validationErrors)
 	}
 

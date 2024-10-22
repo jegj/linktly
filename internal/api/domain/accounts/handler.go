@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
+	linktlyError "github.com/jegj/linktly/internal/api/error"
 	"github.com/jegj/linktly/internal/api/response"
 	"github.com/jegj/linktly/internal/api/types"
 	"github.com/jegj/linktly/internal/api/validations"
@@ -23,9 +24,7 @@ func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Req
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	err := validate.Struct(req)
 	if err != nil {
-		// TODO: MAKE BETTER WAY TO COLLECT ERRORS HERE
-		validationErrors := make(map[string]string)
-		validationErrors["Id"] = err.Error()
+		validationErrors := linktlyError.ValidatorFormatting(err.(validator.ValidationErrors))
 		return response.InvalidRequestData(validationErrors)
 	}
 
@@ -55,12 +54,7 @@ func (s AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) er
 	}
 	errs := validate.Struct(data)
 	if errs != nil {
-		validationErrors := make(map[string]string)
-		// Cast the error to a ValidationErrors type
-		for _, err := range errs.(validator.ValidationErrors) {
-			// Extract the field name and error message
-			validationErrors[err.Field()] = err.Error()
-		}
+		validationErrors := linktlyError.ValidatorFormatting(errs.(validator.ValidationErrors))
 		return response.InvalidRequestData(validationErrors)
 	}
 

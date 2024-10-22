@@ -26,6 +26,7 @@ func LoadRoutes(r chi.Router, config config.Config, store *store.PostgresStore) 
 		slog.Error(error.Error())
 	} else {
 		r.Route("/api/v1/auth", func(r chi.Router) {
+			r.Method("POST", "/signup", handlers.CentralizedErrorHandler(authHandler.Login))
 			r.Method("POST", "/login", handlers.CentralizedErrorHandler(authHandler.Login))
 			r.Method("POST", "/refresh", handlers.CentralizedErrorHandler(authHandler.Refresh))
 			r.Group(func(r chi.Router) {

@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jegj/linktly/internal/config"
 )
 
 var (
@@ -17,10 +18,19 @@ type PostgresStore struct {
 	Source *pgxpool.Pool
 }
 
-func NewPostgresStore(ctx context.Context, connString string) (*PostgresStore, error) {
+func NewPostgresStore(ctx context.Context, appConfig config.Config) (*PostgresStore, error) {
 	pgOnce.Do(func() {
-		pgInstance, dbErr = pgxpool.New(ctx, connString)
-		// TODO: DEFINE POOL CONFIGURATION
+		config, err := pgxpool.ParseConfig(appConfig.GetDBConnectionString())
+		config.MaxConns = appConfig.PgPoolMaxConn
+		config.MinConns = appConfig.PgPoolMinConn
+		config.MaxConnLifetime = appConfig.PgPoolConnLifeTime
+		config.MaxConnIdleTime = appConfig.PgPoolMaxConnIdleTime
+		config.HealthCheckPeriod = appConfig.PgPoolHealthCheckPeriod
+
+		if err != nil {
+			return
+		}
+		pgInstance, dbErr = pgxpool.NewWithConfig(ctx, config)
 		if dbErr != nil {
 			return
 		}

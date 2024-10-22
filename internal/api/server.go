@@ -23,7 +23,7 @@ type Server struct {
 }
 
 func NewServer(cfg config.Config, ctx context.Context, version string) *Server {
-	store, err := store.NewPostgresStore(ctx, cfg.GetDBConnectionString())
+	store, err := store.NewPostgresStore(ctx, cfg)
 	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)

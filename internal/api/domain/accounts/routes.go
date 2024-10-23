@@ -13,7 +13,7 @@ import (
 func LoadRoutes(r chi.Router, config config.Config, store *store.PostgresStore) {
 	accountRepository := GetNewAccountRepository(store)
 	accountService := AccountService{
-		repository: accountRepository,
+		Repository: accountRepository,
 	}
 	accountHandler := AccountHandler{
 		service: accountService,

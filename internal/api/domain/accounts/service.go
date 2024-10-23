@@ -3,13 +3,13 @@ package accounts
 import "context"
 
 type AccountService struct {
-	repository accountsRepository
+	Repository accountsRepository
 }
 
 func (s *AccountService) GetAccountById(ctx context.Context, id string) (*Account, error) {
-	return s.repository.GetByID(ctx, id)
+	return s.Repository.GetByID(ctx, id)
 }
 
 func (s *AccountService) CreateAccount(ctx context.Context, account *Account) (*Account, error) {
-	return s.repository.CreateAccount(ctx, account)
+	return s.Repository.CreateAccount(ctx, account)
 }

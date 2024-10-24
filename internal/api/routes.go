@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jegj/linktly/internal/api/domain/accounts"
 	"github.com/jegj/linktly/internal/api/domain/auth"
+	"github.com/jegj/linktly/internal/api/domain/folders"
 )
 
 func (s *Server) routes() {
@@ -17,5 +18,6 @@ func (s *Server) routes() {
 
 	accounts.LoadRoutes(s.router, s.config, s.store)
 	auth.LoadRoutes(s.router, s.config, s.store)
+	folders.LoadRoutes(s.router, s.config, s.store)
 	// maintance.LoadRoutes(s.router, s.ServerLogVar)
 }

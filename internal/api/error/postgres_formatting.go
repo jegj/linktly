@@ -12,12 +12,18 @@ import (
 
 func PostgresFormatting(dbError error) types.APIError {
 	if pgErr, ok := dbError.(*pgconn.PgError); ok {
-		if pgErr.Code == pgerrcode.UniqueViolation {
+		switch pgErr.Code {
+		case pgerrcode.UniqueViolation:
 			return types.APIError{
 				Msg:        pgErr.Error(),
 				StatusCode: http.StatusConflict,
 			}
-		} else {
+		case pgerrcode.ForeignKeyViolation:
+			return types.APIError{
+				Msg:        pgErr.Error(),
+				StatusCode: http.StatusNotFound,
+			}
+		default:
 			return types.APIError{
 				Msg:        pgErr.Error(),
 				StatusCode: http.StatusInternalServerError,

@@ -27,7 +27,7 @@ func LoadRoutes(r chi.Router, config config.Config, store *store.PostgresStore) 
 			r.Group(func(r chi.Router) {
 				r.Use(jwt.AuthMiddleware(*publicKey))
 				r.Method("POST", "/", handlers.CentralizedErrorHandler(folderHandler.CreateFolder))
-				// r.Method("GET", "/{id}", handlers.CentralizedErrorHandler(accountHandler.GetAccountByIdHandler))
+				r.Method("GET", "/", handlers.CentralizedErrorHandler(folderHandler.GetFolders))
 				// r.Method("POST", "/", handlers.CentralizedErrorHandler(accountHandler.CreateAccount))
 				// r.Method("POST", "/", handlers.CentralizedErrorHandler(accountHandler.CreateAccount))
 			})

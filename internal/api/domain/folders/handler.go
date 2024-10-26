@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 	linktlyError "github.com/jegj/linktly/internal/api/error"
+	"github.com/jegj/linktly/internal/api/jwt"
 	"github.com/jegj/linktly/internal/api/response"
 )
 
@@ -14,6 +15,8 @@ type FolderHandler struct {
 }
 
 func (f FolderHandler) CreateFolder(w http.ResponseWriter, r *http.Request) error {
+	userId := r.Context().Value(jwt.UserIdContextKey).(string)
+
 	data := &FolderReq{}
 	if err := render.Bind(r, data); err != nil {
 		return response.InvalidJsonRequest()
@@ -29,7 +32,7 @@ func (f FolderHandler) CreateFolder(w http.ResponseWriter, r *http.Request) erro
 	folder := &Folder{
 		Name:           data.Name,
 		ParentFolderId: data.ParentFolderId,
-		AccountId:      data.AccountId,
+		AccountId:      userId,
 		Description:    data.Description,
 	}
 
@@ -42,4 +45,10 @@ func (f FolderHandler) CreateFolder(w http.ResponseWriter, r *http.Request) erro
 		}
 		return response.WriteJSON(w, r, http.StatusCreated, resp)
 	}
+}
+
+func (f FolderHandler) GetFolders(w http.ResponseWriter, r *http.Request) error {
+	userId := r.Context().Value(jwt.UserIdContextKey).(string)
+
+	return nil
 }

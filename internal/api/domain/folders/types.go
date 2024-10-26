@@ -11,7 +11,7 @@ type Folder struct {
 	Id             string     `db:"id" json:"id"`
 	Name           string     `db:"name" validate:"required,min=3,max=255" json:"name"`
 	ParentFolderId string     `db:"parent_folder_id" validate:"omitempty,uuid" json:"parent_folder_id"`
-	AccountId      string     `db:"account_id" validate:"required,uuid" json:"account_id"`
+	AccountId      string     `db:"account_id" validate:"omitempty,uuid" json:"account_id"`
 	Description    string     `db:"description" validate:"min=10" json:"description"`
 }
 

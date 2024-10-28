@@ -1,6 +1,6 @@
 # linktly
 
-A demo project for learning go with a real case application
+Basic and common URL Shortener API with Go and PostgreSQL 
 
 ## Documentation
 

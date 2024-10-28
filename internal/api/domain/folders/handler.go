@@ -47,8 +47,19 @@ func (f FolderHandler) CreateFolder(w http.ResponseWriter, r *http.Request) erro
 	}
 }
 
-func (f FolderHandler) GetFolders(w http.ResponseWriter, r *http.Request) error {
+func (f FolderHandler) GetFoldersByUserId(w http.ResponseWriter, r *http.Request) error {
 	userId := r.Context().Value(jwt.UserIdContextKey).(string)
 
-	return nil
+	folders, err := f.service.GetFoldersByUserId(r.Context(), userId)
+	if err != nil {
+		return err
+	} else {
+		folderResponses := make([]render.Renderer, len(folders))
+		for i, folder := range folders {
+			folderResponses[i] = &FolderResp{
+				Folder: folder,
+			}
+		}
+		return response.WriteJSONCollection(w, r, http.StatusOK, folderResponses)
+	}
 }

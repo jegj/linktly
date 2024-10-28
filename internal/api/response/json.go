@@ -12,6 +12,11 @@ func WriteJSON(w http.ResponseWriter, r *http.Request, httpStatus int, responseD
 	return render.Render(w, r, responseData)
 }
 
+func WriteJSONCollection(w http.ResponseWriter, r *http.Request, httpStatus int, responseData []render.Renderer) error {
+	render.Status(r, httpStatus)
+	return render.RenderList(w, r, responseData)
+}
+
 func InvalidRequestData(errors map[string]string) types.APIError {
 	return types.APIError{
 		Msg:        errors,

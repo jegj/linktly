@@ -13,6 +13,7 @@ import (
 type foldersRepository interface {
 	CreateFolder(ctx context.Context, folder *Folder) (*Folder, error)
 	GetFolders(ctx context.Context, userId string) ([]*Folder, error)
+	DeleteFoldersByIdAndUserId(ctx context.Context, folderId string, userId string) error
 }
 
 type PostgresRepository struct {
@@ -46,7 +47,7 @@ func (repo *PostgresRepository) CreateFolder(ctx context.Context, folder *Folder
 }
 
 func (repo *PostgresRepository) GetFolders(ctx context.Context, userId string) ([]*Folder, error) {
-	query := `SELECT id, name, description, parent_folder_id, created_at FROM linktly.folders WHERE account_id = $1`
+	query := `SELECT id, name, description, parent_folder_id, created_at FROM linktly.folders WHERE account_id = $1 AND parent_folder_id IS NULL`
 	rows, error := repo.store.Source.Query(ctx, query, userId)
 
 	if error != nil {
@@ -75,4 +76,21 @@ func (repo *PostgresRepository) GetFolders(ctx context.Context, userId string) (
 	}
 
 	return result, nil
+}
+
+func (repo *PostgresRepository) DeleteFoldersByIdAndUserId(ctx context.Context, folderId string, userId string) error {
+	query := `DELETE FROM linktly.folders WHERE id = $1 AND account_id = $2`
+	cmdTag, err := repo.store.Source.Exec(ctx, query, folderId, userId)
+	if err != nil {
+		return linktlyError.PostgresFormatting(err)
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return types.APIError{
+			Msg:        "Folder not found",
+			StatusCode: http.StatusNotFound,
+		}
+	}
+
+	return nil
 }

@@ -30,3 +30,11 @@ type FolderResp struct {
 func (res *FolderResp) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
+
+type FolderDeleteResp struct {
+	Id string `json:"id"`
+}
+
+func (res *FolderDeleteResp) Render(w http.ResponseWriter, r *http.Request) error {
+	return nil
+}

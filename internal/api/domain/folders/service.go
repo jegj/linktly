@@ -13,3 +13,7 @@ func (s *FolderService) CreateFolder(ctx context.Context, folder *Folder) (*Fold
 func (s *FolderService) GetFoldersByUserId(ctx context.Context, userId string) ([]*Folder, error) {
 	return s.Repository.GetFolders(ctx, userId)
 }
+
+func (s *FolderService) DeleteFoldersByIdAndUserId(ctx context.Context, folderId string, userId string) error {
+	return s.Repository.DeleteFoldersByIdAndUserId(ctx, folderId, userId)
+}

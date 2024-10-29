@@ -3,6 +3,7 @@ package folders
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 	linktlyError "github.com/jegj/linktly/internal/api/error"
@@ -61,5 +62,20 @@ func (f FolderHandler) GetFoldersByUserId(w http.ResponseWriter, r *http.Request
 			}
 		}
 		return response.WriteJSONCollection(w, r, http.StatusOK, folderResponses)
+	}
+}
+
+func (f FolderHandler) DeleteFoldersByIdAndUserId(w http.ResponseWriter, r *http.Request) error {
+	userId := r.Context().Value(jwt.UserIdContextKey).(string)
+	folderId := chi.URLParam(r, "id")
+
+	err := f.service.DeleteFoldersByIdAndUserId(r.Context(), folderId, userId)
+	if err != nil {
+		return err
+	} else {
+		resp := &FolderDeleteResp{
+			Id: folderId,
+		}
+		return response.WriteJSON(w, r, http.StatusOK, resp)
 	}
 }

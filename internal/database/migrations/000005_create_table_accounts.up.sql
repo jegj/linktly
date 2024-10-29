@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS linktly.accounts (
    created_at TIMESTAMP,
    updated_at TIMESTAMP DEFAULT NULL,
    CONSTRAINT email_check CHECK (
-     email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+     email ~* '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$'
    )
 );
 

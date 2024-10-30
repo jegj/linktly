@@ -29,7 +29,7 @@ func LoadRoutes(r chi.Router, config config.Config, store *store.PostgresStore) 
 				r.Method("POST", "/", handlers.CentralizedErrorHandler(folderHandler.CreateFolder))
 				r.Method("GET", "/", handlers.CentralizedErrorHandler(folderHandler.GetFoldersByUserId))
 				r.Method("DELETE", "/{id}", handlers.CentralizedErrorHandler(folderHandler.DeleteFoldersByIdAndUserId))
-				// r.Method("POST", "/", handlers.CentralizedErrorHandler(accountHandler.CreateAccount))
+				r.Method("PATCH", "/{id}", handlers.CentralizedErrorHandler(folderHandler.PatchFoldersByIdAndUserId))
 			})
 		})
 	}

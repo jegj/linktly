@@ -48,6 +48,7 @@ func (f FolderHandler) CreateFolder(w http.ResponseWriter, r *http.Request) erro
 	}
 }
 
+// TODO: Display links here ?
 func (f FolderHandler) GetFoldersByUserId(w http.ResponseWriter, r *http.Request) error {
 	userId := r.Context().Value(jwt.UserIdContextKey).(string)
 
@@ -75,6 +76,38 @@ func (f FolderHandler) DeleteFoldersByIdAndUserId(w http.ResponseWriter, r *http
 	} else {
 		resp := &FolderDeleteResp{
 			Id: folderId,
+		}
+		return response.WriteJSON(w, r, http.StatusOK, resp)
+	}
+}
+
+func (f FolderHandler) PatchFoldersByIdAndUserId(w http.ResponseWriter, r *http.Request) error {
+	userId := r.Context().Value(jwt.UserIdContextKey).(string)
+	folderId := chi.URLParam(r, "id")
+
+	data := &FolderPatchReq{}
+	if err := render.Bind(r, data); err != nil {
+		return response.InvalidJsonRequest()
+	}
+
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	errs := validate.Struct(data)
+	if errs != nil {
+		validationErrors := linktlyError.ValidatorFormatting(errs.(validator.ValidationErrors))
+		return response.InvalidRequestData(validationErrors)
+	}
+
+	folderReq := &Folder{
+		Name:        data.Name,
+		Description: data.Description,
+	}
+
+	folder, err := f.service.PatchFolderByIdAndUserId(r.Context(), folderId, userId, folderReq)
+	if err != nil {
+		return err
+	} else {
+		resp := &FolderResp{
+			Folder: folder,
 		}
 		return response.WriteJSON(w, r, http.StatusOK, resp)
 	}

@@ -38,3 +38,12 @@ type FolderDeleteResp struct {
 func (res *FolderDeleteResp) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
+
+type FolderPatchReq struct {
+	Name        string `db:"name" validate:"required,min=3,max=255" json:"name"`
+	Description string `db:"description" validate:"min=10" json:"description"`
+}
+
+func (req *FolderPatchReq) Bind(r *http.Request) error {
+	return nil
+}

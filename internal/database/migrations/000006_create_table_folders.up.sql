@@ -20,3 +20,4 @@ EXECUTE FUNCTION linktly.set_created_at();
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE linktly.folders TO linktly_user;
 COMMIT;
 
+  -- TODO: update trigger for updated_at

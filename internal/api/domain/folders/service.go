@@ -21,3 +21,7 @@ func (s *FolderService) DeleteFoldersByIdAndUserId(ctx context.Context, folderId
 func (s *FolderService) PatchFolderByIdAndUserId(ctx context.Context, folderId string, userId string, folder *Folder) (*Folder, error) {
 	return s.Repository.PatchFolderByIdAndUserId(ctx, folderId, userId, folder)
 }
+
+func (s *FolderService) GetFolderByIdAndUserId(ctx context.Context, folderId string, userId string) (*Folder, error) {
+	return s.Repository.GetFolderByIdAndUserId(ctx, folderId, userId)
+}

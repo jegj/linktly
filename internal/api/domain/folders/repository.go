@@ -2,7 +2,6 @@ package folders
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -16,6 +15,7 @@ type foldersRepository interface {
 	GetFolders(ctx context.Context, userId string) ([]*Folder, error)
 	DeleteFoldersByIdAndUserId(ctx context.Context, folderId string, userId string) error
 	PatchFolderByIdAndUserId(ctx context.Context, folderId string, userId string, folder *Folder) (*Folder, error)
+	GetFolderByIdAndUserId(ctx context.Context, folderId string, userId string) (*Folder, error)
 }
 
 type PostgresRepository struct {
@@ -102,7 +102,18 @@ func (repo *PostgresRepository) PatchFolderByIdAndUserId(ctx context.Context, fo
 	query := `UPDATE linktly.folders SET name = $1, description = $2 WHERE id = $3 AND account_id = $4 RETURNING id, name, description, account_id, parent_folder_id, created_at, updated_at`
 	err := repo.store.Source.QueryRow(ctx, query, folder.Name, folder.Description, folderId, userId).Scan(&folderResp.Id, &folderResp.Name, &folderResp.Description, &folderResp.AccountId, &folderResp.ParentFolderId, &folderResp.CreatedAt, &folderResp.UpdatedAt)
 	if err != nil {
-		fmt.Printf("=============>%v|n", err)
+		return nil, linktlyError.PostgresFormatting(err)
+	}
+
+	return &folderResp, nil
+}
+
+func (repo *PostgresRepository) GetFolderByIdAndUserId(ctx context.Context, folderId string, userId string) (*Folder, error) {
+	var folderResp Folder
+	query := `SELECT id, name, description, parent_folder_id, created_at, updated_at FROM linktly.folders WHERE id = $1 AND account_id = $2`
+
+	err := repo.store.Source.QueryRow(ctx, query, folderId, userId).Scan(&folderResp.Id, &folderResp.Name, &folderResp.Description, &folderResp.AccountId, &folderResp.ParentFolderId, &folderResp.CreatedAt, &folderResp.UpdatedAt)
+	if err != nil {
 		return nil, linktlyError.PostgresFormatting(err)
 	}
 

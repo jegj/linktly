@@ -112,3 +112,18 @@ func (f FolderHandler) PatchFoldersByIdAndUserId(w http.ResponseWriter, r *http.
 		return response.WriteJSON(w, r, http.StatusOK, resp)
 	}
 }
+
+func (f FolderHandler) GetFolderByIdAndUserId(w http.ResponseWriter, r *http.Request) error {
+	userId := r.Context().Value(jwt.UserIdContextKey).(string)
+	folderId := chi.URLParam(r, "id")
+
+	folder, err := f.service.GetFolderByIdAndUserId(r.Context(), folderId, userId)
+	if err != nil {
+		return err
+	} else {
+		resp := &FolderResp{
+			Folder: folder,
+		}
+		return response.WriteJSON(w, r, http.StatusOK, resp)
+	}
+}

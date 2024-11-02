@@ -110,7 +110,7 @@ func (repo *PostgresRepository) PatchFolderByIdAndUserId(ctx context.Context, fo
 
 func (repo *PostgresRepository) GetFolderByIdAndUserId(ctx context.Context, folderId string, userId string) (*Folder, error) {
 	var folderResp Folder
-	query := `SELECT id, name, description, parent_folder_id, created_at, updated_at FROM linktly.folders WHERE id = $1 AND account_id = $2`
+	query := `SELECT id, name, description, account_id, parent_folder_id, created_at, updated_at FROM linktly.folders WHERE id = $1 AND account_id = $2`
 
 	err := repo.store.Source.QueryRow(ctx, query, folderId, userId).Scan(&folderResp.Id, &folderResp.Name, &folderResp.Description, &folderResp.AccountId, &folderResp.ParentFolderId, &folderResp.CreatedAt, &folderResp.UpdatedAt)
 	if err != nil {

@@ -17,7 +17,10 @@ BEFORE INSERT ON linktly.folders
 FOR EACH ROW
 EXECUTE FUNCTION linktly.set_created_at();
 
+CREATE OR REPLACE TRIGGER before_update_linktly_folders_set_updated_at
+BEFORE UPDATE ON linktly.folders
+FOR EACH ROW
+EXECUTE FUNCTION linktly.set_updated_at();
+
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE linktly.folders TO linktly_user;
 COMMIT;
-
-  -- TODO: update trigger for updated_at

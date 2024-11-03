@@ -23,5 +23,10 @@ BEFORE INSERT ON linktly.accounts
 FOR EACH ROW
 EXECUTE FUNCTION linktly.set_created_at();
 
+CREATE OR REPLACE TRIGGER before_update_linktly_accounts_set_updated_at
+BEFORE UPDATE ON linktly.accounts
+FOR EACH ROW
+EXECUTE FUNCTION linktly.set_updated_at();
+
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE linktly.accounts TO linktly_user;
 COMMIT;

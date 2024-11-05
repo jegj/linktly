@@ -5,6 +5,7 @@ import (
 	"github.com/jegj/linktly/internal/api/domain/accounts"
 	"github.com/jegj/linktly/internal/api/domain/auth"
 	"github.com/jegj/linktly/internal/api/domain/folders"
+	"github.com/jegj/linktly/internal/api/domain/links"
 )
 
 func (s *Server) routes() {
@@ -19,5 +20,6 @@ func (s *Server) routes() {
 	accounts.LoadRoutes(s.router, s.config, s.store)
 	auth.LoadRoutes(s.router, s.config, s.store)
 	folders.LoadRoutes(s.router, s.config, s.store)
+	links.LoadRoutes(s.router, s.config, s.store)
 	// maintance.LoadRoutes(s.router, s.ServerLogVar)
 }

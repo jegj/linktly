@@ -1,1 +1,1 @@
-ALTER DATABASE linktlydb SET TIMEZONE = 'UTC/etc';
+ALTER DATABASE linktlydb SET TIMEZONE = 'UTC';

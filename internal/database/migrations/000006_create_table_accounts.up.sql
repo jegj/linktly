@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS linktly.accounts (
    api_token VARCHAR(255) DEFAULT NULL,
    role INT NOT null DEFAULT 2,
    refresh_token_jti VARCHAR(255) DEFAULT NULL,
-   created_at TIMESTAMP,
-   updated_at TIMESTAMP DEFAULT NULL,
+   created_at TIMESTAMP WITH TIME ZONE,
+   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
    CONSTRAINT email_check CHECK (
      email ~* '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$'
    )

@@ -8,6 +8,8 @@ import (
 	linktlyError "github.com/jegj/linktly/internal/api/error"
 	"github.com/jegj/linktly/internal/api/jwt"
 	"github.com/jegj/linktly/internal/api/response"
+	"github.com/jegj/linktly/internal/api/types"
+	"github.com/jegj/linktly/internal/api/validations"
 )
 
 type LinksHandler struct {
@@ -23,6 +25,14 @@ func (l LinksHandler) CreateLink(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
+
+	if err := validate.RegisterValidation("expires_at", validations.ExpiresAtValidation); err != nil {
+		return types.APIError{
+			Msg:        err.Error(),
+			StatusCode: http.StatusInternalServerError,
+		}
+	}
+
 	errs := validate.Struct(data)
 	if errs != nil {
 		validationErrors := linktlyError.ValidatorFormatting(errs.(validator.ValidationErrors))
@@ -33,7 +43,6 @@ func (l LinksHandler) CreateLink(w http.ResponseWriter, r *http.Request) error {
 		Name:        data.Name,
 		Description: data.Description,
 		Url:         data.Url,
-		LinktlyUrl:  data.LinktlyUrl,
 		FolderId:    data.FolderId,
 		AccountId:   userId,
 		ExpiresAt:   data.ExpiresAt,

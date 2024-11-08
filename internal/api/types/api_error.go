@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/render"
 )
 
+// TODO: Set up friendly message to the user
 type APIError struct {
 	Msg        any `json:"msg"`
 	StatusCode int `json:"statusCode"`

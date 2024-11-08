@@ -2,8 +2,7 @@ BEGIN;
 CREATE TABLE IF NOT EXISTS linktly.links (
    id  UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v7(),
    name VARCHAR(255) NOT NULL,
-   -- TODO: rename to code and make it unique
-   linktly_url VARCHAR(255) NOT NULL,
+   linktly_code VARCHAR(255) UNIQUE NOT NULL,
    url TEXT NOT NULL,
    description TEXT,
    account_id  UUID REFERENCES linktly.accounts(id) NOT NULL,

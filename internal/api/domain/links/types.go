@@ -11,7 +11,7 @@ type Link struct {
 	FolderId    *string    `db:"folder_id" validate:"uuid" json:"folder_id"`
 	ExpiresAt   *time.Time `db:"expires_at" validate:"omitempty,expires_at" json:"expires_at"`
 	Id          string     `db:"id" json:"id"`
-	LinktlyUrl  string     `db:"linktly_url" validate:"omitempty,http_url" json:"linktly_url"`
+	LinktlyCode string     `db:"linktly_code" validate:"omitempty,http_url" json:"linktly_url"`
 	Url         string     `db:"url" validate:"http_url" json:"url"`
 	Name        string     `db:"name" validate:"required,min=3,max=255" json:"name"`
 	AccountId   string     `db:"account_id" validate:"omitempty,uuid" json:"account_id"`

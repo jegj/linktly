@@ -22,11 +22,11 @@ func GetNewRlinkRepository(store *store.PostgresStore) *PostgresRepository {
 }
 
 func (repo *PostgresRepository) GetLinkByCode(ctx context.Context, code string) (*Rlink, error) {
-	query := `SELECT code FROM linktly.links WHERE code = $1 AND expires_at > NOW()`
+	query := `SELECT url FROM linktly.links WHERE linktly_code = $1 AND expires_at > NOW()`
 
 	var url string
 
-	err := repo.store.Source.QueryRow(ctx, query, code).Scan(&code)
+	err := repo.store.Source.QueryRow(ctx, query, code).Scan(&url)
 	if err != nil {
 		return nil, linktlyError.PostgresFormatting(err)
 	}

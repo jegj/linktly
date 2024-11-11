@@ -10,6 +10,7 @@ type LinksService struct {
 }
 
 func (l *LinksService) CreateLink(ctx context.Context, link *Link) (*Link, error) {
+	// TODO: Handle collisions
 	link.LinktlyCode = CreateShortCode()
 	return l.Repository.CreateLink(ctx, link)
 }

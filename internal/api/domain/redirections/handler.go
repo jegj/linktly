@@ -12,9 +12,6 @@ type RedirectionsHandler struct {
 
 func (l RedirectionsHandler) GetLinkByCode(w http.ResponseWriter, r *http.Request) {
 	code := chi.URLParam(r, "code")
-
-	// TODO: VALIDATE CODE
-
 	link, err := l.service.GetLinkByCode(r.Context(), code)
 	if err != nil {
 		// TODO: MOVE TO 404 PAGE

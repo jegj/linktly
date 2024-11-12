@@ -49,7 +49,7 @@ func (repo *PostgresRepository) CreateFolder(ctx context.Context, folder *Folder
 }
 
 func (repo *PostgresRepository) GetFolders(ctx context.Context, userId string) ([]*Folder, error) {
-	query := `SELECT id, name, description, parent_folder_id, created_at FROM linktly.folders WHERE account_id = $1 AND parent_folder_id IS NULL`
+	query := `SELECT id, name, description, parent_folder_id, created_at FROM linktly.folders WHERE account_id = $1`
 	rows, error := repo.store.Source.Query(ctx, query, userId)
 
 	if error != nil {

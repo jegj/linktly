@@ -48,7 +48,6 @@ func (f FolderHandler) CreateFolder(w http.ResponseWriter, r *http.Request) erro
 	}
 }
 
-// TODO: Display links here ?
 func (f FolderHandler) GetFoldersByUserId(w http.ResponseWriter, r *http.Request) error {
 	userId := r.Context().Value(jwt.UserIdContextKey).(string)
 

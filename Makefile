@@ -9,4 +9,10 @@ vet:
 vet_shadow:
 	go vet -vettool=$(which shadow) cmd/main.go
 build:
-	go build -ldflags="-X 'main.Version=v1.0.0'"
+	go build -ldflags="-X 'main.Version=v1.0.0'" -o linktly cmd/main.go
+staticcheck:
+	staticcheck ./...
+audit:
+	govulncheck -mode binary -show verbose linktly
+gosec:
+	gosec ./...

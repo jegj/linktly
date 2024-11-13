@@ -15,7 +15,7 @@ type PostgresContainer struct {
 	ConnectionString string
 }
 
-func CreatePostgresContainer(ctx context.Context, initialScripts string) (*PostgresContainer, error) {
+func CreatePostgresContainerWithSnapshot(ctx context.Context, initialScripts string) (*PostgresContainer, error) {
 	dbname := "linktly_test"
 	dbuser := "linktly_admin"
 	options := []testcontainers.ContainerCustomizer{

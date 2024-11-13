@@ -16,8 +16,7 @@ import (
 func TestAccountRepository(t *testing.T) {
 	ctx := context.Background()
 
-	// TODO: Probably creating snapshot gonna depend on the test
-	pgContainer, err := testutils.CreatePostgresContainer(
+	pgContainer, err := testutils.CreatePostgresContainerWithSnapshot(
 		ctx,
 		path.Join("../../../database/testdb/up.sql"),
 	)

@@ -16,7 +16,7 @@ type PostgresContainer struct {
 }
 
 func CreatePostgresContainerWithSnapshot(ctx context.Context, initialScripts string) (*PostgresContainer, error) {
-	dbname := "linktly_test"
+	dbname := "linktlydb"
 	dbuser := "linktly_admin"
 	options := []testcontainers.ContainerCustomizer{
 		postgres.WithDatabase(dbname),

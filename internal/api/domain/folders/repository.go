@@ -16,6 +16,7 @@ type foldersRepository interface {
 	DeleteFoldersByIdAndUserId(ctx context.Context, folderId string, userId string) error
 	PatchFolderByIdAndUserId(ctx context.Context, folderId string, userId string, folder *Folder) (*Folder, error)
 	GetFolderByIdAndUserId(ctx context.Context, folderId string, userId string) (*Folder, error)
+	GetHomeLayaoutByUserId(ctx context.Context, userId string) ([]*Folder, error)
 }
 
 type PostgresRepository struct {
@@ -118,4 +119,36 @@ func (repo *PostgresRepository) GetFolderByIdAndUserId(ctx context.Context, fold
 	}
 
 	return &folderResp, nil
+}
+
+func (repo *PostgresRepository) GetHomeLayaoutByUserId(ctx context.Context, userId string) ([]*Folder, error) {
+	query := `SELECT id, name, description, parent_folder_id, created_at FROM linktly.folders WHERE account_id = $1 AND parent_folder_id IN (SELECT id FROM linktly.folders WHERE account_id = $1 AND parent_folder_id IS NULL )`
+	rows, error := repo.store.Source.Query(ctx, query, userId)
+
+	if error != nil {
+		return nil, linktlyError.PostgresFormatting(error)
+	}
+
+	var result []*Folder
+
+	for rows.Next() {
+		var folder Folder
+		err := rows.Scan(&folder.Id, &folder.Name, &folder.Description, &folder.ParentFolderId, &folder.CreatedAt)
+		if err != nil {
+			return nil, types.APIError{
+				Msg:        err.Error(),
+				StatusCode: http.StatusInternalServerError,
+			}
+		}
+		result = append(result, &folder)
+	}
+
+	if rows.Err() != nil {
+		return nil, types.APIError{
+			Msg:        rows.Err().Error(),
+			StatusCode: http.StatusInternalServerError,
+		}
+	}
+
+	return result, nil
 }

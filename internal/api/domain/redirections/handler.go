@@ -14,6 +14,7 @@ func (l RedirectionsHandler) GetLinkByCode(w http.ResponseWriter, r *http.Reques
 	code := chi.URLParam(r, "code")
 	link, err := l.service.GetLinkByCode(r.Context(), code)
 	if err != nil {
+		// TODO: HANDLE THIS WITH A REVER PROXY
 		http.Redirect(w, r, "/404.html", http.StatusMovedPermanently)
 	} else {
 		http.Redirect(w, r, link.Url, http.StatusMovedPermanently)

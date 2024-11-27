@@ -3,6 +3,7 @@ package links
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 	linktlyError "github.com/jegj/linktly/internal/api/error"
@@ -49,6 +50,31 @@ func (l LinksHandler) CreateLink(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	link, err := l.service.CreateLink(r.Context(), link)
+	if err != nil {
+		return err
+	} else {
+		resp := &LinkResp{
+			Link: link,
+		}
+		return response.WriteJSON(w, r, http.StatusCreated, resp)
+	}
+}
+
+func (l LinksHandler) GetLink(w http.ResponseWriter, r *http.Request) error {
+	userId := r.Context().Value(jwt.UserIdContextKey).(string)
+	id := chi.URLParam(r, "id")
+
+	req := GetLinktByIdHandlerReq{
+		Id: id,
+	}
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	err := validate.Struct(req)
+	if err != nil {
+		validationErrors := linktlyError.ValidatorFormatting(err.(validator.ValidationErrors))
+		return response.InvalidRequestData(validationErrors)
+	}
+
+	link, err := l.service.GetLink(r.Context(), id, userId)
 	if err != nil {
 		return err
 	} else {

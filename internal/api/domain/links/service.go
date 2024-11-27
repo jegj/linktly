@@ -26,6 +26,10 @@ func (l *LinksService) CreateLink(ctx context.Context, link *Link) (*Link, error
 	}
 }
 
+func (l *LinksService) GetLink(ctx context.Context, id string, userId string) (*Link, error) {
+	return l.Repository.GetLink(ctx, id, userId)
+}
+
 func isConflictApiError(err error) bool {
 	if apiErr, ok := err.(types.APIError); ok {
 		return apiErr.StatusCode == http.StatusConflict

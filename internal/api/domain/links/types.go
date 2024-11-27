@@ -33,3 +33,7 @@ type LinkResp struct {
 func (res *LinkResp) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
+
+type GetLinktByIdHandlerReq struct {
+	Id string `validate:"required,uuid"`
+}

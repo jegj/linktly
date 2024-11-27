@@ -10,6 +10,7 @@ import (
 
 type linksRepository interface {
 	CreateLink(ctx context.Context, link *Link) (*Link, error)
+	GetLink(ctx context.Context, id string, userId string) (*Link, error)
 }
 
 type PostgresRepository struct {
@@ -36,4 +37,14 @@ func (repo *PostgresRepository) CreateLink(ctx context.Context, link *Link) (*Li
 	link.Id = id
 	link.CreatedAt = createdAt
 	return link, nil
+}
+
+func (repo *PostgresRepository) GetLink(ctx context.Context, id string, userId string) (*Link, error) {
+	var link Link
+	query := `SELECT id, name, description, account_id, folder_id, linktly_code, url, expires_at, created_at FROM linktly.links WHERE id = $1 AND account_id = $2`
+	err := repo.store.Source.QueryRow(ctx, query, id, userId).Scan(&link.Id, &link.Name, &link.Description, &link.AccountId, &link.FolderId, &link.LinktlyCode, &link.Url, &link.ExpiresAt, &link.CreatedAt)
+	if err != nil {
+		return nil, linktlyError.PostgresFormatting(err)
+	}
+	return &link, nil
 }

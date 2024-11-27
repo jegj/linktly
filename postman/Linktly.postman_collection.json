@@ -36,7 +36,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "0191e400-fe29-7434-9c6c-26fbc133ecd1"
+							"value": "01930130-6fbf-71a4-bee2-321444cf3bf7"
 						}
 					]
 				}
@@ -222,7 +222,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"test\",\n    \"parent_folder_id\": \"0192be5b-a26e-7517-abed-cb9562afe8ad\",\n    \"account_id\": \"0191e400-fe29-7434-9c6c-26fbc133ecd1\",\n    \"description\": \"This is a test description\"\n}"
+					"raw": "{\n    \"name\": \"test\",\n    \"description\": \"This is a test description\"\n}"
 				},
 				"url": {
 					"raw": "{{URL}}/api/v1/folders/",
@@ -278,7 +278,51 @@
 			"response": []
 		},
 		{
-			"name": "/folders/{id}",
+			"name": "/folders/:id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{URL}}/api/v1/folders/:id",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"folders",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "0192dd19-d8f3-7295-889e-f9d1d0a422a9"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/folders/:id",
 			"request": {
 				"method": "DELETE",
 				"header": [
@@ -294,7 +338,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{URL}}/api/v1/folders/0192be5c-6d77-7d93-846d-64db80b7f8e3",
+					"raw": "{{URL}}/api/v1/folders/:id",
 					"host": [
 						"{{URL}}"
 					],
@@ -302,14 +346,20 @@
 						"api",
 						"v1",
 						"folders",
-						"0192be5c-6d77-7d93-846d-64db80b7f8e3"
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "0192dd19-d8f3-7295-889e-f9d1d0a422a9"
+						}
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "/folders/{id}",
+			"name": "/folders/:id",
 			"request": {
 				"method": "PATCH",
 				"header": [
@@ -326,10 +376,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"test changed\",\n    \"description\": \"This is the description changed\"\n}"
+					"raw": "{\n    \"name\": \"test changed 3\",\n    \"description\": \"This is the description changed 3\"\n}"
 				},
 				"url": {
-					"raw": "{{URL}}/api/v1/folders/0192dd19-d8f3-7295-889e-f9d1d0a422a9",
+					"raw": "{{URL}}/api/v1/folders/:id",
 					"host": [
 						"{{URL}}"
 					],
@@ -337,7 +387,142 @@
 						"api",
 						"v1",
 						"folders",
-						"0192dd19-d8f3-7295-889e-f9d1d0a422a9"
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "0192dd19-d8f3-7295-889e-f9d1d0a422a9"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/links/",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"test link\",\n    \"folder_id\": \"0193065c-61b6-7fa3-bc93-5068ca6f630f\",\n    \"description\": \"This is my first link\",\n    \"url\": \"https://github.com/go-playground/validator\",\n    \"expires_at\": \"2024-12-12T05:00:00.000Z\"\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/api/v1/links/",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"links",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/links/:id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"test link\",\n    \"folder_id\": \"0193065c-61b6-7fa3-bc93-5068ca6f630f\",\n    \"description\": \"This is my first link\",\n    \"url\": \"https://github.com/go-playground/validator\",\n    \"expires_at\": \"2024-12-12T05:00:00.000Z\"\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/api/v1/links/:id",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"links",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "01930b86-53ae-75cc-8ffd-d9a973a1a722"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/links/:id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/api/v1/links/:id",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"links",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "01930b86-53ae-75cc-8ffd-d9a973a1a722"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/r/:code",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/r/:code",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"r",
+						":code"
+					],
+					"variable": [
+						{
+							"key": "code",
+							"value": "ZEH296"
+						}
 					]
 				}
 			},

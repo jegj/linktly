@@ -18,7 +18,7 @@ type Config struct {
 	DBHost                  string        `required:"true" envconfig:"DBHOST"`
 	DBName                  string        `required:"true" envconfig:"DBNAME"`
 	DBPasword               string        `required:"true" envconfig:"DBPASSWORD"`
-	ServerAddress           string        `default:"8080" envconfig:"SERVER_ADDRESS"`
+	ServerAddress           string        `default:"3000" envconfig:"SERVER_ADDRESS"`
 	LogLevel                string        `default:"WARN" envconfig:"LOG_LEVEL"`
 	LinktlyPublicKey        string        `required:"true" envconfig:"LINKTLY_PUBLIC_KEY"`
 	ShutdownGracePeriod     time.Duration `default:"30s" envconfig:"SHUTDOWN_GRACE_PERIOD"`

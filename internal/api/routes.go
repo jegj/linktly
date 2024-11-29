@@ -16,7 +16,7 @@ func (s *Server) routes() {
 	s.router.Use(middleware.Recoverer)
 	s.router.Use(middleware.RequestID)
 	s.router.Use(middleware.CleanPath)
-	s.router.Use(middleware.Heartbeat("/ping"))
+	s.router.Use(middleware.Heartbeat("/api/ping"))
 
 	accounts.LoadRoutes(s.router, s.config, s.store)
 	auth.LoadRoutes(s.router, s.config, s.store)

@@ -15,7 +15,7 @@ func (l RedirectionsHandler) GetLinkByCode(w http.ResponseWriter, r *http.Reques
 	link, err := l.service.GetLinkByCode(r.Context(), code)
 	if err != nil {
 		// TODO: HANDLE THIS WITH A REVER PROXY
-		http.Redirect(w, r, "/404.html", http.StatusMovedPermanently)
+		http.Redirect(w, r, "/static/404.html", http.StatusMovedPermanently)
 	} else {
 		http.Redirect(w, r, link.Url, http.StatusMovedPermanently)
 	}

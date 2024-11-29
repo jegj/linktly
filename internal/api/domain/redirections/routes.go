@@ -15,7 +15,7 @@ func LoadRoutes(r chi.Router, config config.Config, store *store.PostgresStore) 
 		service: redirectionsService,
 	}
 
-	r.Route("/r", func(r chi.Router) {
+	r.Route("/api/v1/r", func(r chi.Router) {
 		r.Get("/{code}", redirectionsHandler.GetLinkByCode)
 	})
 }

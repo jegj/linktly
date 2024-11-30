@@ -1,12 +1,13 @@
 # linktly
 
-Basic and common URL Shortener API with Go and PostgreSQL 
+Basic and common URL Shortener API with Go and PostgreSQL
 
 ## Documentation
 
 - [Database Setup](./docs/DATABASE_SETUP.md)
 - [Database Migrations](/docs/DATABASE_MIGRATIONS.md)
 - [Development](./docs/DEVELOPMENT.md)
+- [HTTP Caching](https://www.youtube.com/watch?v=PtHoUMPkCZQ)
 
 ## References
 

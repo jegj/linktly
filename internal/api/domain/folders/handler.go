@@ -61,6 +61,7 @@ func (f FolderHandler) GetFoldersByUserId(w http.ResponseWriter, r *http.Request
 				Folder: folder,
 			}
 		}
+		w.Header().Set("Cache-Control", "public, max-age=20")
 		return response.WriteJSONCollection(w, r, http.StatusOK, folderResponses)
 	}
 }
@@ -123,6 +124,7 @@ func (f FolderHandler) GetFolderByIdAndUserId(w http.ResponseWriter, r *http.Req
 		resp := &FolderResp{
 			Folder: folder,
 		}
+		w.Header().Set("Cache-Control", "public, max-age=10")
 		return response.WriteJSON(w, r, http.StatusOK, resp)
 	}
 }

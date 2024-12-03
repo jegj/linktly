@@ -35,6 +35,7 @@ func (s AccountHandler) GetAccountByIdHandler(w http.ResponseWriter, r *http.Req
 		resp := &AccountResp{
 			Account: account,
 		}
+		w.Header().Set("Cache-Control", "public, max-age=10")
 		return response.WriteJSON(w, r, http.StatusOK, resp)
 	}
 }

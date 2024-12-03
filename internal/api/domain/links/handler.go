@@ -81,6 +81,7 @@ func (l LinksHandler) GetLink(w http.ResponseWriter, r *http.Request) error {
 		resp := &LinkResp{
 			Link: link,
 		}
+		w.Header().Set("Cache-Control", "public, max-age=10")
 		return response.WriteJSON(w, r, http.StatusCreated, resp)
 	}
 }

@@ -23,6 +23,7 @@ func LoadRoutes(r chi.Router, config config.Config, store *store.PostgresStore) 
 	if error != nil {
 		slog.Error(error.Error())
 	} else {
+		// TODO: Move links endpoints here
 		r.Route("/api/v1/folders", func(r chi.Router) {
 			r.Group(func(r chi.Router) {
 				r.Use(jwt.AuthMiddleware(*publicKey))

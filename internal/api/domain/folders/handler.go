@@ -6,13 +6,17 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
+	"github.com/jegj/linktly/internal/api/domain/links"
 	linktlyError "github.com/jegj/linktly/internal/api/error"
 	"github.com/jegj/linktly/internal/api/jwt"
 	"github.com/jegj/linktly/internal/api/response"
+	"github.com/jegj/linktly/internal/api/types"
+	"github.com/jegj/linktly/internal/api/validations"
 )
 
 type FolderHandler struct {
-	service FolderService
+	service     FolderService
+	linkService links.LinksService
 }
 
 func (f FolderHandler) CreateFolder(w http.ResponseWriter, r *http.Request) error {
@@ -126,5 +130,51 @@ func (f FolderHandler) GetFolderByIdAndUserId(w http.ResponseWriter, r *http.Req
 		}
 		w.Header().Set("Cache-Control", "public, max-age=10")
 		return response.WriteJSON(w, r, http.StatusOK, resp)
+	}
+}
+
+func (l FolderHandler) CreateLink(w http.ResponseWriter, r *http.Request) error {
+	userId := r.Context().Value(jwt.UserIdContextKey).(string)
+	folderId := chi.URLParam(r, "id")
+
+	// TODO: validate folderId as uuid
+
+	data := &links.LinkReq{}
+	if err := render.Bind(r, data); err != nil {
+		return response.InvalidJsonRequest()
+	}
+
+	validate := validator.New(validator.WithRequiredStructEnabled())
+
+	if err := validate.RegisterValidation("expires_at", validations.ExpiresAtValidation); err != nil {
+		return types.APIError{
+			Msg:        err.Error(),
+			StatusCode: http.StatusInternalServerError,
+		}
+	}
+
+	errs := validate.Struct(data)
+	if errs != nil {
+		validationErrors := linktlyError.ValidatorFormatting(errs.(validator.ValidationErrors))
+		return response.InvalidRequestData(validationErrors)
+	}
+
+	link := &links.Link{
+		Name:        data.Name,
+		Description: data.Description,
+		Url:         data.Url,
+		FolderId:    &folderId,
+		AccountId:   userId,
+		ExpiresAt:   data.ExpiresAt,
+	}
+
+	link, err := l.linkService.CreateLink(r.Context(), link)
+	if err != nil {
+		return err
+	} else {
+		resp := &links.LinkResp{
+			Link: link,
+		}
+		return response.WriteJSON(w, r, http.StatusCreated, resp)
 	}
 }

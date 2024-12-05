@@ -8,7 +8,7 @@ import (
 type Link struct {
 	CreatedAt   time.Time  `db:"created_at" json:"created_at"`
 	UpdatedAt   *time.Time `db:"updated_at" json:"updated_at"`
-	FolderId    *string    `db:"folder_id" validate:"uuid" json:"folder_id"`
+	FolderId    *string    `db:"folder_id" validate:"omitempty,uuid" json:"folder_id"`
 	ExpiresAt   *time.Time `db:"expires_at" validate:"omitempty,expires_at" json:"expires_at"`
 	Id          string     `db:"id" json:"id"`
 	LinktlyCode string     `db:"linktly_code" validate:"omitempty,http_url" json:"linktly_url"`

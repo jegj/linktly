@@ -47,3 +47,7 @@ type FolderPatchReq struct {
 func (req *FolderPatchReq) Bind(r *http.Request) error {
 	return nil
 }
+
+type FolderIdReq struct {
+	Id string `validate:"required,uuid"`
+}

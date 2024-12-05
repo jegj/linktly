@@ -137,14 +137,20 @@ func (l FolderHandler) CreateLink(w http.ResponseWriter, r *http.Request) error 
 	userId := r.Context().Value(jwt.UserIdContextKey).(string)
 	folderId := chi.URLParam(r, "id")
 
-	// TODO: validate folderId as uuid
+	req := FolderIdReq{
+		Id: folderId,
+	}
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	err := validate.Struct(req)
+	if err != nil {
+		validationErrors := linktlyError.ValidatorFormatting(err.(validator.ValidationErrors))
+		return response.InvalidRequestData(validationErrors)
+	}
 
 	data := &links.LinkReq{}
 	if err := render.Bind(r, data); err != nil {
 		return response.InvalidJsonRequest()
 	}
-
-	validate := validator.New(validator.WithRequiredStructEnabled())
 
 	if err := validate.RegisterValidation("expires_at", validations.ExpiresAtValidation); err != nil {
 		return types.APIError{
@@ -168,7 +174,7 @@ func (l FolderHandler) CreateLink(w http.ResponseWriter, r *http.Request) error 
 		ExpiresAt:   data.ExpiresAt,
 	}
 
-	link, err := l.linkService.CreateLink(r.Context(), link)
+	link, err = l.linkService.CreateLink(r.Context(), link)
 	if err != nil {
 		return err
 	} else {

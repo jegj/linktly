@@ -64,7 +64,7 @@ func (l LinksHandler) GetLink(w http.ResponseWriter, r *http.Request) error {
 	userId := r.Context().Value(jwt.UserIdContextKey).(string)
 	id := chi.URLParam(r, "id")
 
-	req := GetLinktByIdHandlerReq{
+	req := LinkIdReq{
 		Id: id,
 	}
 	validate := validator.New(validator.WithRequiredStructEnabled())

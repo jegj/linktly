@@ -34,6 +34,6 @@ func (res *LinkResp) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-type GetLinktByIdHandlerReq struct {
+type LinkIdReq struct {
 	Id string `validate:"required,uuid"`
 }

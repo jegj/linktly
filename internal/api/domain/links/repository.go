@@ -2,9 +2,11 @@ package links
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	linktlyError "github.com/jegj/linktly/internal/api/error"
+	"github.com/jegj/linktly/internal/api/types"
 	"github.com/jegj/linktly/internal/store"
 )
 
@@ -47,4 +49,36 @@ func (repo *PostgresRepository) GetLink(ctx context.Context, id string, userId s
 		return nil, linktlyError.PostgresFormatting(err)
 	}
 	return &link, nil
+}
+
+func (repo *PostgresRepository) GetLinksByFolderId(ctx context.Context, folderId string, userId string) ([]*Link, error) {
+	query := `SELECT id, name, description, account_id, folder_id, linktly_code, url, expires_at, created_at FROM linktly.links WHERE folder_id = $1 AND account_id = $2`
+	rows, err := repo.store.Source.Query(ctx, query, folderId, userId)
+	if err != nil {
+		return nil, linktlyError.PostgresFormatting(err)
+	}
+
+	var result []*Link
+
+	for rows.Next() {
+		var link Link
+
+		err := rows.Scan(&link.Id, &link.Name, &link.Description, &link.AccountId, &link.Url, &link.LinktlyCode, &link.ExpiresAt, &link.FolderId, &link.ExpiresAt, &link.CreatedAt)
+		if err != nil {
+			return nil, types.APIError{
+				Msg:        err.Error(),
+				StatusCode: http.StatusInternalServerError,
+			}
+		}
+		result = append(result, &link)
+	}
+
+	if rows.Err() != nil {
+		return nil, types.APIError{
+			Msg:        rows.Err().Error(),
+			StatusCode: http.StatusInternalServerError,
+		}
+	}
+
+	return result, nil
 }

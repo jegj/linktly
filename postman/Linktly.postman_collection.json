@@ -83,11 +83,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{URL}}/ping",
+					"raw": "{{URL}}/api/ping",
 					"host": [
 						"{{URL}}"
 					],
 					"path": [
+						"api",
 						"ping"
 					]
 				}
@@ -240,6 +241,48 @@
 			"response": []
 		},
 		{
+			"name": "/folders/:id/links",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"google link\",\n    \"description\": \"This is my my second link\",\n    \"url\": \"https://www.google.com/\",\n    \"expires_at\": \"2025-12-12T05:00:00.000Z\"\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/api/v1/folders/:id/links",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"folders",
+						":id",
+						"links"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "01937cec-5c8f-7495-9d9f-866c7769acb5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "/folders/",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -314,7 +357,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "0192dd19-d8f3-7295-889e-f9d1d0a422a9"
+							"value": "01937cec-5c8f-7495-9d9f-866c7769acb5"
 						}
 					]
 				}
@@ -510,11 +553,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{URL}}/r/:code",
+					"raw": "{{URL}}/api/v1/r/:code",
 					"host": [
 						"{{URL}}"
 					],
 					"path": [
+						"api",
+						"v1",
 						"r",
 						":code"
 					],

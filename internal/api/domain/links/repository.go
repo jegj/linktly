@@ -13,6 +13,7 @@ import (
 type linksRepository interface {
 	CreateLink(ctx context.Context, link *Link) (*Link, error)
 	GetLink(ctx context.Context, id string, userId string) (*Link, error)
+	GetLinksByFolderId(ctx context.Context, folderId string, userId string) ([]*Link, error)
 }
 
 type PostgresRepository struct {
@@ -63,7 +64,7 @@ func (repo *PostgresRepository) GetLinksByFolderId(ctx context.Context, folderId
 	for rows.Next() {
 		var link Link
 
-		err := rows.Scan(&link.Id, &link.Name, &link.Description, &link.AccountId, &link.Url, &link.LinktlyCode, &link.ExpiresAt, &link.FolderId, &link.ExpiresAt, &link.CreatedAt)
+		err := rows.Scan(&link.Id, &link.Name, &link.Description, &link.AccountId, &link.FolderId, &link.LinktlyCode, &link.Url, &link.ExpiresAt, &link.CreatedAt)
 		if err != nil {
 			return nil, types.APIError{
 				Msg:        err.Error(),

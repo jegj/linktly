@@ -184,3 +184,31 @@ func (l FolderHandler) CreateLink(w http.ResponseWriter, r *http.Request) error 
 		return response.WriteJSON(w, r, http.StatusCreated, resp)
 	}
 }
+
+func (l FolderHandler) GetLinksUnderFolder(w http.ResponseWriter, r *http.Request) error {
+	userId := r.Context().Value(jwt.UserIdContextKey).(string)
+	folderId := chi.URLParam(r, "id")
+
+	req := FolderIdReq{
+		Id: folderId,
+	}
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	err := validate.Struct(req)
+	if err != nil {
+		validationErrors := linktlyError.ValidatorFormatting(err.(validator.ValidationErrors))
+		return response.InvalidRequestData(validationErrors)
+	}
+
+	linksSet, err := l.linkService.GetLinksByFolderId(r.Context(), folderId, userId)
+	if err != nil {
+		return err
+	} else {
+		linksResponse := make([]render.Renderer, len(linksSet))
+		for i, link := range linksSet {
+			linksResponse[i] = &links.LinkResp{
+				Link: link,
+			}
+		}
+		return response.WriteJSONCollection(w, r, http.StatusOK, linksResponse)
+	}
+}

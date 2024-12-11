@@ -30,6 +30,10 @@ func (l *LinksService) GetLink(ctx context.Context, id string, userId string) (*
 	return l.Repository.GetLink(ctx, id, userId)
 }
 
+func (l *LinksService) GetLinksByFolderId(ctx context.Context, folderId string, userId string) ([]*Link, error) {
+	return l.Repository.GetLinksByFolderId(ctx, folderId, userId)
+}
+
 func isConflictApiError(err error) bool {
 	if apiErr, ok := err.(types.APIError); ok {
 		return apiErr.StatusCode == http.StatusConflict

@@ -40,6 +40,7 @@ func LoadRoutes(r chi.Router, config config.Config, store *store.PostgresStore) 
 				r.Method("PATCH", "/{id}", handlers.CentralizedErrorHandler(folderHandler.PatchFoldersByIdAndUserId))
 
 				r.Method("POST", "/{id}/links", handlers.CentralizedErrorHandler(folderHandler.CreateLink))
+				r.Method("GET", "/{id}/links", handlers.CentralizedErrorHandler(folderHandler.GetLinksUnderFolder))
 			})
 		})
 	}

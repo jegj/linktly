@@ -13,6 +13,7 @@ type RedirectionsHandler struct {
 func (l RedirectionsHandler) GetLinkByCode(w http.ResponseWriter, r *http.Request) {
 	code := chi.URLParam(r, "code")
 	link, err := l.service.GetLinkByCode(r.Context(), code)
+	// TODO: HTTP Caching
 	if err != nil {
 		http.Redirect(w, r, "/static/404.html", http.StatusMovedPermanently)
 	} else {

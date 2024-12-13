@@ -13,6 +13,7 @@ import (
 type linksRepository interface {
 	CreateLink(ctx context.Context, link *Link) (*Link, error)
 	GetLink(ctx context.Context, id string, userId string) (*Link, error)
+	GetLinkByFolderId(ctx context.Context, id string, userId string, folderId string) (*Link, error)
 	GetLinksByFolderId(ctx context.Context, folderId string, userId string) ([]*Link, error)
 }
 
@@ -46,6 +47,16 @@ func (repo *PostgresRepository) GetLink(ctx context.Context, id string, userId s
 	var link Link
 	query := `SELECT id, name, description, account_id, folder_id, linktly_code, url, expires_at, created_at FROM linktly.links WHERE id = $1 AND account_id = $2`
 	err := repo.store.Source.QueryRow(ctx, query, id, userId).Scan(&link.Id, &link.Name, &link.Description, &link.AccountId, &link.FolderId, &link.LinktlyCode, &link.Url, &link.ExpiresAt, &link.CreatedAt)
+	if err != nil {
+		return nil, linktlyError.PostgresFormatting(err)
+	}
+	return &link, nil
+}
+
+func (repo *PostgresRepository) GetLinkByFolderId(ctx context.Context, id string, userId string, folderId string) (*Link, error) {
+	var link Link
+	query := `SELECT id, name, description, account_id, folder_id, linktly_code, url, expires_at, created_at FROM linktly.links WHERE id = $1 AND account_id = $2 AND folder_id = $3`
+	err := repo.store.Source.QueryRow(ctx, query, id, userId, folderId).Scan(&link.Id, &link.Name, &link.Description, &link.AccountId, &link.FolderId, &link.LinktlyCode, &link.Url, &link.ExpiresAt, &link.CreatedAt)
 	if err != nil {
 		return nil, linktlyError.PostgresFormatting(err)
 	}

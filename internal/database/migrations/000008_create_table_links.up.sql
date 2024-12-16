@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS linktly.links (
    linktly_code VARCHAR(255) UNIQUE NOT NULL,
    url TEXT NOT NULL,
    description TEXT,
-   account_id  UUID REFERENCES linktly.accounts(id) NOT NULL,
-   folder_id   UUID REFERENCES linktly.folders(id) NOT NULL,
+   account_id  UUID REFERENCES linktly.accounts(id) ON DELETE CASCADE ON UPDATE NO ACTION,
+   folder_id   UUID REFERENCES linktly.folders(id) ON DELETE CASCADE ON UPDATE NO ACTION,
    created_at TIMESTAMP WITH TIME ZONE,
    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
    expires_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
@@ -21,5 +21,3 @@ EXECUTE FUNCTION linktly.set_created_at();
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE linktly.links TO linktly_user;
 COMMIT;
-
-

@@ -3,8 +3,8 @@ CREATE TABLE IF NOT EXISTS linktly.folders (
    id  UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v7(),
    name VARCHAR(255) NOT NULL,
    description TEXT,
-   account_id  UUID REFERENCES linktly.accounts(id) NOT NULL,
-   parent_folder_id UUID REFERENCES linktly.folders(id) DEFAULT NULL,
+   account_id  UUID REFERENCES linktly.accounts(id) ON DELETE CASCADE ON UPDATE NO ACTION,
+   parent_folder_id UUID REFERENCES linktly.folders(id) ON DELETE CASCADE ON UPDATE NO ACTION DEFAULT NULL,
    created_at TIMESTAMP WITH TIME ZONE,
    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
    undeletable BOOLEAN DEFAULT FALSE

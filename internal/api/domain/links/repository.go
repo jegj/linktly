@@ -30,8 +30,6 @@ func GetNewLinkRepository(store *store.PostgresStore) *PostgresRepository {
 func (repo *PostgresRepository) CreateLink(ctx context.Context, link *Link) (*Link, error) {
 	var id string
 	var createdAt time.Time
-	// TODO: Add a hash column so this function can reuse code for similar codes ?? what about other user ownerships?
-
 	query := `INSERT INTO linktly.links(name, description, account_id, folder_id, linktly_code, url, expires_at ) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id, created_at`
 	err := repo.store.Source.QueryRow(ctx, query, link.Name, link.Description, link.AccountId, link.FolderId, link.LinktlyCode, link.Url, link.ExpiresAt).Scan(&id, &createdAt)
 	if err != nil {

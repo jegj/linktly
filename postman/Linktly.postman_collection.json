@@ -113,7 +113,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"email\":\"jegj57@gmail.com\",\n    \"password\": \"Madrid1990\"\n}"
+					"raw": "{\n    \"email\":\"jegj57@gmail.com\",\n    \"password\": \"Madrid_1990\"\n}"
 				},
 				"url": {
 					"raw": "{{URL}}/api/v1/auth/login",
@@ -188,7 +188,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Javier\",\n    \"lastname\": \"Galarza\",\n    \"email\": \"jegj57@gmail.com\",\n    \"password\": \"Madrid1990\"\n}"
+					"raw": "{\n    \"name\": \"Javier\",\n    \"lastname\": \"Galarza\",\n    \"email\": \"jegj578@gmail.com\",\n    \"password\": \"Madrid_1990\"\n}"
 				},
 				"url": {
 					"raw": "{{URL}}/api/v1/auth/signup",
@@ -244,6 +244,51 @@
 			"name": "/folders/:id/links",
 			"request": {
 				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"google link\",\n    \"description\": \"This is my my second link\",\n    \"url\": \"https://www.gmail.com/\",\n    \"expires_at\": \"2025-12-12T05:00:00.000Z\"\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/api/v1/folders/:id/links",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"folders",
+						":id",
+						"links"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "01937cec-5c8f-7495-9d9f-866c7769acb5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/folders/:id/links",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
 				"header": [
 					{
 						"key": "Content-Type",
@@ -394,7 +439,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "0192dd19-d8f3-7295-889e-f9d1d0a422a9"
+							"value": "01937cec-5c8f-7495-9d9f-866c7769acb5"
 						}
 					]
 				}

@@ -18,3 +18,7 @@ Basic and common URL Shortener API with Go and PostgreSQL
 - [Tweet Automated Bot](https://github.com/forgeutah/tweet_automated_bot/blob/main/main.go)
 - [Working with pgx](https://donchev.is/post/working-with-postgresql-in-go-using-pgx/)
 - [Go8](https://github.com/gmhafiz/go8)
+
+## Free VPC forever
+
+- [Oracle](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm)

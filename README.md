@@ -8,6 +8,7 @@ Basic and common URL Shortener API with Go and PostgreSQL
 - [Database Migrations](/docs/DATABASE_MIGRATIONS.md)
 - [Development](./docs/DEVELOPMENT.md)
 - [HTTP Caching](https://www.youtube.com/watch?v=PtHoUMPkCZQ)
+- [Nginx Rate Limiting](https://rednafi.com/go/rate_limiting_via_nginx/)
 
 ## References
 

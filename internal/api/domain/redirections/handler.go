@@ -14,6 +14,7 @@ func (l RedirectionsHandler) GetLinkByCode(w http.ResponseWriter, r *http.Reques
 	code := chi.URLParam(r, "code")
 	link, err := l.service.GetLinkByCode(r.Context(), code)
 	// TODO: HTTP Caching
+	// w.Header().Set("Cache-Control", "public, max-age=10")
 	if err != nil {
 		http.Redirect(w, r, "/static/404.html", http.StatusMovedPermanently)
 	} else {
